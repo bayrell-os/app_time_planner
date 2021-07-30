@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import MainPage from './pages/MainPage.vue'
-import TaskListPage from './pages/TaskListPage.vue'
+import TaskListPage from './pages/TaskList/TaskListPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
