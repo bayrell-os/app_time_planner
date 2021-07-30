@@ -4,7 +4,9 @@ backend/backend
 
 # Frontend
 frontend/var
-frontend/html
+frontend/html/bundle.js
+frontend/html/bundle.js.LICENSE.txt
+frontend/html/bundle.js.map
 
 # Logs
 frontend/logs
