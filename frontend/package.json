@@ -4,7 +4,7 @@
     "description": "Time Planner",
     "scripts": {
         "build": "webpack",
-        "watch": "webpack --watch --progress"
+        "watch": "webpack --watch --progress --mode development"
     },
     "devDependencies": {
         "@babel/core": "7.14.8",
