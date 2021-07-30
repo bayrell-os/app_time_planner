@@ -19,7 +19,10 @@ module.exports = {
     poll: 1000,
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      '@': path.resolve(__dirname, 'src')
+    },
+    extensions: ['.tsx', '.ts', '.js', '.jsx', '.css', '.scss', '.sass', '.vue']
   },
   module: {
     rules: [

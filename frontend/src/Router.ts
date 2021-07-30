@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import MainPage from './pages/MainPage.vue'
-import TaskListPage from './pages/TaskList/TaskListPage.vue'
+import MainPage from '@/pages/MainPage.vue'
+import TaskListPage from '@/pages/TaskList/TaskListPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -22,7 +22,7 @@ const routes: Array<RouteRecordRaw> = [
     // which is lazy-loaded when the route is visited.
     component: () => import(
       // webpackChunkName: "about"
-      './pages/TaskListPage.vue'
+      '@/pages/TaskListPage.vue'
       )
   }*/
 ]
