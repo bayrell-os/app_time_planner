@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import MainPage from '../pages/MainPage.vue'
-import TaskListPage from '../pages/TaskListPage.vue'
+import MainPage from './pages/MainPage.vue'
+import TaskListPage from './pages/TaskListPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -11,14 +11,20 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/tasks/',
     name: 'TaskListPage',
+    component: TaskListPage
+  },
+  /*
+  {
+    path: '/tasks/',
+    name: 'TaskListPage',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(
       // webpackChunkName: "about"
-      '../pages/TaskListPage.vue'
+      './pages/TaskListPage.vue'
       )
-  }
+  }*/
 ]
 
 const router = createRouter({

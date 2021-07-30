@@ -3,11 +3,12 @@ const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
   entry: [
-    './src/index.ts',
+    './src/index.js',
   ],
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'html/dist'),
+    libraryExport: 'default'
   },
   devtool: 'source-map',
   mode: 'production',

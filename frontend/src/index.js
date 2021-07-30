@@ -2,10 +2,10 @@ import "./main.scss";
 
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
-import store from './store'
+import Router from './Router'
+import Store from './Store'
 
 createApp(App)
-    .use(store)
-    .use(router)
+    .use(Store)
+    .use(Router)
     .mount('#app')
