@@ -6,6 +6,6 @@ import Router from './Router'
 import Store from './Store'
 
 createApp(App)
-    .use(Store)
-    .use(Router)
-    .mount('#app')
+	.use(Store)
+	.use(Router)
+	.mount('#app')

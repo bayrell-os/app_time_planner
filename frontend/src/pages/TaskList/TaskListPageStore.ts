@@ -64,10 +64,14 @@ export class Task
 	user_id = null;
 }
 
+export class TaskListState
+{
+	tasks: Array<Task> = new Array<Task>();
+	targets: Array<Target> = new Array<Target>();
+}
+
 export const TaskListPageStore = createStore({
-	state:
-	{
-	},
+	state: new TaskListState(),
 	mutations:
 	{
 	},
