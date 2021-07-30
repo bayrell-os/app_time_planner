@@ -38,7 +38,7 @@
 		<div class="task_list_wrap">
 			<div class="task_list_wrap_title">Цели</div>
 			<div class="task_list_items">
-				<div class="task_list_item task_list_item--simple">
+				<div class="task_list_item task_list_item--simple" @click="onClick">
 					Сделать сайт 1
 				</div>
 				<div class="task_list_item task_list_item--simple">
@@ -96,16 +96,4 @@
 	</div>
 </template>
 
-
-<script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-
-@Options({
-  components:
-  {
-  },
-})
-export default class TaskListPage extends Vue
-{
-}
-</script>
+<script src="./TaskListPageComponent.js" lang="js"></script>

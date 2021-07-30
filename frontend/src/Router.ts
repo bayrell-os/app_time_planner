@@ -1,17 +1,19 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import MainPage from '@/pages/MainPage.vue'
+import MainPage from '@/pages/Main/MainPage.vue'
 import TaskListPage from '@/pages/TaskList/TaskListPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'MainPage',
-    component: MainPage
+    component: MainPage,
+    props: { namespace: ["MainPage"] }
   },
   {
     path: '/tasks/',
     name: 'TaskListPage',
-    component: TaskListPage
+    component: TaskListPage,
+    props: { namespace: ["TaskListPage"] }
   },
   /*
   {

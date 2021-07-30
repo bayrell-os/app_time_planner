@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
-import { TaskListStore } from '@/pages/TaskList/TaskListStore'
+import { MainPageStore } from '@/pages/Main/MainPageStore'
+import { TaskListPageStore } from '@/pages/TaskList/TaskListPageStore'
 
 export default createStore({
   state: {
@@ -9,6 +10,7 @@ export default createStore({
   actions: {
   },
   modules: {
-    "TaskList": TaskListStore
+    "MainPage": MainPageStore,
+    "TaskListPage": TaskListPageStore
   }
 })
