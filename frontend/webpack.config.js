@@ -1,32 +1,39 @@
 const path = require('path');
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
   entry: [
-    './src/index.js',
-    './src/main.scss',
+    './src/index.ts',
   ],
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'html'),
+    path: path.resolve(__dirname, 'html/dist'),
   },
   devtool: 'source-map',
   mode: 'production',
-  watch: true,
+  watch: false,
   watchOptions: {
     ignored: /node_modules/,
     aggregateTimeout: 200,
     poll: 1000,
   },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
   module: {
     rules: [
       {
-        test: /\.vue$/,
-        loader: 'vue-loader'
-      },
-      {
         test: /\.js$/,
         loader: 'babel-loader'
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
       },
       {
         test: /\.css$/,

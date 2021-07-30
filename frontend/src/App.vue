@@ -35,9 +35,3 @@ ul.layout_menu_items li{
 	</div>
 </template>
 
-
-<script>
-    export default {
-    }
-</script>
-

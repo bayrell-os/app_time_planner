@@ -97,44 +97,15 @@
 </template>
 
 
-<script>
+<script lang="ts">
+import { Options, Vue } from 'vue-class-component';
 
-export default
+@Options({
+  components:
+  {
+  },
+})
+export default class TaskListPage extends Vue
 {
-	props: ['namespace'],
-	buildStore: (state) =>
-	{
-		if (state == null || state == undefined)
-		{
-			state =
-			{
-				"name": "Username",
-			};
-		}
-		
-		var res =
-		{
-			namespaced: true,
-			state: () => { return state; },
-			modules:
-			{
-			},
-			mutations:
-			{
-			},
-		}
-		
-		return res;
-	},
-	computed:
-	{
-		model()
-		{
-			return this.getModel();
-		},
-	},
-	components:
-	{
-	},
 }
 </script>

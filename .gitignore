@@ -4,9 +4,7 @@ backend/backend
 
 # Frontend
 frontend/var
-frontend/html/bundle.js
-frontend/html/bundle.js.LICENSE.txt
-frontend/html/bundle.js.map
+frontend/html/dist
 
 # Logs
 frontend/logs
@@ -112,3 +110,6 @@ frontend/.dynamodb/
 
 # TernJS port file
 frontend/.tern-port
+
+# Test
+test/*
