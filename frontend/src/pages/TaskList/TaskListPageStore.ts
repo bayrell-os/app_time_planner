@@ -64,16 +64,23 @@ export class Task
 	user_id = null;
 }
 
-export class TaskListState
+export interface TaskListPageState
 {
-	tasks: Array<Task> = new Array<Task>();
-	targets: Array<Target> = new Array<Target>();
+	tasks: Array<Task>;
+	targets: Array<Target>;
 }
 
-export const TaskListPageStore = createStore({
-	state: new TaskListState(),
+export const TaskListPageStore = createStore<TaskListPageState>({
+	state:
+	{
+		tasks: new Array<Task>(),
+		targets: new Array<Target>(),
+	},
 	mutations:
 	{
+		addTask (state: TaskListPageState, task: Task)
+		{
+		}
 	},
 	actions:
 	{

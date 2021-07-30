@@ -1,8 +1,13 @@
 import { createStore } from 'vuex'
 
-export const MainPageStore = createStore({
+export interface MainPageState
+{
+	username: string;
+}
+
+export const MainPageStore = createStore<MainPageState>({
 	state: {
-		"username": "Test"
+		username: "Test"
 	},
 	mutations: {
 	},
