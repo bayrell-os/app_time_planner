@@ -96,4 +96,23 @@
 	</div>
 </template>
 
-<script src="./TaskListPageComponent.js" lang="js"></script>
+<script lang="js">
+
+import { defineComponent } from 'vue';
+import { mixin } from "@/lib";
+
+export default defineComponent({
+	mixins: [ mixin ],
+	computed:
+	{
+	},
+	methods:
+	{
+		onClick()
+		{
+			console.log("!!!");
+		}
+	}
+});
+
+</script>

@@ -1,6 +1,7 @@
-import { createStore, Store } from 'vuex'
-import { MainPageStore, MainPageState } from '@/pages/Main/MainPageStore'
-import { TaskListPageStore } from '@/pages/TaskList/TaskListPageStore'
+import { createStore } from 'vuex'
+import { buildStore } from '@/lib'
+import { MainPageState } from '@/pages/Main/MainPageState'
+import { TaskListPageState } from '@/pages/TaskList/TaskListPageState'
 
 
 /**
@@ -14,21 +15,7 @@ export default createStore({
 	actions: {
 	},
 	modules: {
-		"MainPage": MainPageStore,
-		"TaskListPage": TaskListPageStore
+		"MainPage": buildStore(MainPageState),
+		"TaskListPage": buildStore(TaskListPageState),
 	}
 })
-
-
-/**
- * Create test store
- */
-export function createTestStore (store: Store<{}>)
-{
-	let state: Record<string, any> = store.state;
-	
-	/* Main Page */
-	let main_page: MainPageState = state["MainPage"];
-	main_page.username = "Test12345";
-
-}

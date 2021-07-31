@@ -1,4 +1,3 @@
-import { createStore } from 'vuex'
 
 /**
  * Task status
@@ -64,28 +63,32 @@ export class Task
 	user_id = null;
 }
 
-export interface TaskListPageState
+export class TaskListPageState
 {
-	tasks: Array<Task>;
-	targets: Array<Target>;
-}
+	tasks: Array<Task> = new Array<Task>();
+	targets: Array<Target> = new Array<Target>();
 
-export const TaskListPageStore = createStore<TaskListPageState>({
-	state:
+
+	/**
+	 * Returns methods list
+	 */
+	static mutations(): Array<string>
 	{
-		tasks: new Array<Task>(),
-		targets: new Array<Target>(),
-	},
-	mutations:
-	{
-		addTask (state: TaskListPageState, task: Task)
-		{
-		}
-	},
-	actions:
-	{
-	},
-	modules:
-	{
+		let res: Array<string> =
+		[
+		];
+		return res;
 	}
-})
+
+
+	/**
+	 * Returns modules
+	 */
+	static modules(): Record<string, any>
+	{
+		let res: Record<string, any> =
+		{
+		};
+		return res;
+	}
+}
