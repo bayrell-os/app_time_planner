@@ -1,10 +1,14 @@
 import "./main.scss";
 
 import { createApp } from 'vue'
+import { buildStore } from 'vue-helper'
 import App from './App.vue'
 import Router from './Router'
-import Store from './Store'
-import { createTestStore } from './StoreTest'
+import { AppState } from './AppState'
+import { initTestStore } from './StoreTest'
+
+/* Create app state */
+let Store = buildStore(AppState);
 
 var app = createApp(App)
 	.use(Store)
@@ -15,4 +19,4 @@ window["appInstance"] = app;
 window["storeInstance"] = Store;
 
 /* Create test store */
-createTestStore(Store)
+initTestStore(Store)

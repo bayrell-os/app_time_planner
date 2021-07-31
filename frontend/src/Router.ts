@@ -7,13 +7,13 @@ const routes: Array<RouteRecordRaw> = [
 		path: '/',
 		name: 'MainPage',
 		component: MainPage,
-		props: { namespace: ["MainPage"] }
+		props: { store_path: ["MainPage"] }
 	},
 	{
 		path: '/tasks/',
 		name: 'TaskListPage',
 		component: TaskListPage,
-		props: { namespace: ["TaskListPage"] }
+		props: { store_path: ["TaskListPage"] }
 	},
 	/*
 	{

@@ -1,24 +1,18 @@
 import { Store } from "vuex";
-import { MainPageState } from "./pages/Main/MainPageState";
-import { Target, TaskListPageState } from "./pages/TaskList/TaskListPageState";
+import { AppState } from "./AppState";
+import { Target } from "./pages/TaskList/TaskListPageState";
 
 /**
  * Create test store
  */
-export function createTestStore (store: Store<{}>)
+export function initTestStore (store: Store<AppState>)
 {
-	let state: Record<string, any> = store.state;
-	
 	/* Main Page */
-	let main_page: MainPageState = new MainPageState();
-	main_page.username = "Test12345";
-	state["MainPage"] = main_page;
+	store.state.MainPage.username = "Test12345";
 
 	/* Task List Page */
-	let task_list_page: TaskListPageState = new TaskListPageState();
-	task_list_page.targets.push( generateTarget(1) );
-	task_list_page.targets.push( generateTarget(2) );
-	state["TaskListPage"] = task_list_page;
+	store.state.TaskListPage.targets.push( generateTarget(1) );
+	store.state.TaskListPage.targets.push( generateTarget(2) );
 }
 
 function generateTarget(id: number): Target

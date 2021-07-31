@@ -8,8 +8,8 @@ export const TaskStatus =
 	WORK: "work",
 	COMPLETE: "complete",
 };
- 
- 
+
+
 /**
  * Target
  */
@@ -25,8 +25,8 @@ export class Target
 	 */
 	name = "";
 }
- 
- 
+
+
 /**
  * Task
  */
@@ -62,6 +62,7 @@ export class Task
 	 */
 	user_id = null;
 }
+
 
 export class TaskListPageState
 {
