@@ -44,6 +44,7 @@
 	},
 	"dependencies": {
 		"core-js": "^3.6.5",
+		"dayjs": "^1.10.6",
 		"immutable": "^4.0.0-rc.14",
 		"vue-class-component": "^8.0.0-0",
 		"vue-helper": "0.0.2",
