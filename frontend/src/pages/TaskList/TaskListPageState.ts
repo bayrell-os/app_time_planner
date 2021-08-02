@@ -79,6 +79,12 @@ export class Task extends BaseObject
 
 
 	/**
+	 * Position 
+	 */
+	pos: number = 0;
+
+
+	/**
 	 * From object
 	 */
 	assignValues(params:Record<string, any>): Task
@@ -89,6 +95,7 @@ export class Task extends BaseObject
 		this.target_id = Number(params["target_id"] || this.target_id);
 		this.user_id = Number(params["user_id"] || this.user_id);
 		this.date = String(params["date"] || this.date);
+		this.pos = Number(params["pos"] || this.pos);
 		super.assignValues(params);
 		return this;
 	}
@@ -154,7 +161,11 @@ export class TaskListPageState extends BaseObject
 						"title": value,
 						"date": value,
 						"tasks": state.tasks
+							/* Get task by date */
 							.filter( task => task.date == value )
+							/* Sort by pos */
+							.sort( (a: Task, b: Task) => a.pos - b.pos )
+							/* Get task id */
 							.map( task => task.id )
 					})
 				)

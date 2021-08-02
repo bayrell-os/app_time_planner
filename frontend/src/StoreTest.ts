@@ -30,48 +30,57 @@ export function initTestStore (store: Store<AppState>)
 		name: "Прочее",
 	}) );
 
+	let pos: number = 0;
+
 	/* Tasks */
 	store.state.TaskListPage.tasks.push( new Task().assignValues({
 		id: 1,
 		target_id: 1,
 		name: "Тестирование сайта",
 		date: today,
+		pos: pos++,
 	}) );
 	store.state.TaskListPage.tasks.push( new Task().assignValues({
 		id: 2,
 		target_id: 1,
 		name: "Показывать цены в зависимости от города",
 		date: today,
+		pos: pos++,
 	}) );
 	store.state.TaskListPage.tasks.push( new Task().assignValues({
 		id: 3,
 		target_id: 1,
 		name: "Параметры товаров, фильтр и поиск товара",
 		date: today,
+		pos: pos++,
 	}) );
 	store.state.TaskListPage.tasks.push( new Task().assignValues({
 		id: 4,
 		target_id: 1,
 		name: "Выгрузка товаров",
 		date: tomorrow,
+		pos: pos++,
 	}) );
 	store.state.TaskListPage.tasks.push( new Task().assignValues({
 		id: 5,
 		target_id: 2,
 		name: "Поставить онлайн чат",
 		date: tomorrow2,
+		pos: pos++,
 	}) );
 	store.state.TaskListPage.tasks.push( new Task().assignValues({
 		id: 6,
 		target_id: 3,
 		name: "Закинуть деньги на телефон",
 		date: tomorrow,
+		pos: pos++,
 	}) );
 	store.state.TaskListPage.tasks.push( new Task().assignValues({
 		id: 7,
 		target_id: 3,
 		name: "Сделать уборку дома",
 		date: tomorrow,
+		pos: pos++,
 	}) );
 
 	/* Init columns */
