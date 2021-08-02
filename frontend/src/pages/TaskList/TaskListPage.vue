@@ -38,61 +38,38 @@
 		<div class="task_list_wrap">
 			<div class="task_list_wrap_title">Цели</div>
 			<div class="task_list_items">
-				<div class="task_list_item task_list_item--simple" @click="onClick">
-					Сделать сайт 1
-				</div>
-				<div class="task_list_item task_list_item--simple">
-					Сделать сайт 2
+				<div class="task_list_item task_list_item--simple"
+					v-for="target in model.targets"
+					v-bind:key="target.id"
+					v-bind:data-target-id="target.id"
+				>
+					{{ target["name"] }}
 				</div>
 			</div>
 		</div>
 
-		<div class="task_list_wrap">
-			<div class="task_list_wrap_title">На этой неделе</div>
+		<div class="task_list_wrap"
+			v-for="column, index in model.columns"
+			v-bind:key="index"
+
+		>
+			<div class="task_list_wrap_title">{{ column.title }}</div>
 			<div class="task_list_items">
-				<div class="task_list_item task_list_item--full">
-					<div class="task_list_item_title">Сделать сайт 1</div>
-					<div class="task_list_item_desc">Тестирование сайта</div>
-				</div>
-				<div class="task_list_item task_list_item--full">
-					<div class="task_list_item_title">Сделать сайт 1</div>
-					<div class="task_list_item_desc">Показывать цены в зависимости от города</div>
-				</div>
-				<div class="task_list_item task_list_item--full">
-					<div class="task_list_item_title">Сделать сайт 1</div>
-					<div class="task_list_item_desc">Параметры товаров, фильтр и поиск товара</div>
-				</div>
-				<div class="task_list_item task_list_item--full">
-					<div class="task_list_item_title">Прочее</div>
-					<div class="task_list_item_desc">Закинуть деньги на телефон</div>
-				</div>
-				<div class="task_list_item task_list_item--full">
-					<div class="task_list_item_title">Прочее</div>
-					<div class="task_list_item_desc">Сделать уборку дома</div>
+				<div class="task_list_item task_list_item--full"
+					v-for="task_id, index in column.tasks"
+					v-bind:key="index"
+					v-bind:data-task-id="task_id"
+				>
+					<div class="task_list_item_title">
+						{{ attr(model.getTargetByTaskID(task_id), "name", "") }}
+					</div>
+					<div class="task_list_item_desc">
+						{{ attr(model.getTaskById(task_id), "name", "") }}
+					</div>
 				</div>
 			</div>
 		</div>
-
-		<div class="task_list_wrap">
-			<div class="task_list_wrap_title">Сегодня</div>
-			<div class="task_list_items">
-				<div class="task_list_item task_list_item--full">
-					<div class="task_list_item_title">Сделать сайт 1</div>
-					<div class="task_list_item_desc">Выгрузка товаров</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="task_list_wrap">
-			<div class="task_list_wrap_title">Сегодня</div>
-			<div class="task_list_items">
-				<div class="task_list_item task_list_item--full">
-					<div class="task_list_item_title">Сайт 2</div>
-					<div class="task_list_item_desc">Поставить онлайн чат</div>
-				</div>
-			</div>
-		</div>
-
+		
 	</div>
 </template>
 
@@ -100,9 +77,10 @@
 
 import { defineComponent } from 'vue';
 import { mixin } from "vue-helper";
+import { mixin_lib } from "@/lib";
 
 export default defineComponent({
-	mixins: [ mixin ],
+	mixins: [ mixin, mixin_lib ],
 	computed:
 	{
 	},
@@ -111,7 +89,7 @@ export default defineComponent({
 		onClick()
 		{
 			console.log("!!!");
-		}
+		},
 	}
 });
 

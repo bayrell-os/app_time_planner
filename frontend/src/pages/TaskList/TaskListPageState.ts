@@ -139,6 +139,45 @@ export class TaskListPageState extends BaseObject
 
 
 	/**
+	 * Returns task by id
+	 */
+	getTaskById(task_id:number): Task | null
+	{
+		let task:Task | undefined = this.tasks.find( (task) => task.id === task_id );
+		if (task == undefined) return null;
+		return task;
+	}
+
+	/**
+	 * Returns target by id
+	 */
+	getTargetById(target_id:number): Target | null
+	{
+		let target:Target | undefined = this.targets.find( (target) => target.id === target_id );
+		if (target == undefined) return null;
+		return target;
+	}
+
+
+	/**
+	 * Returns target name by task id
+	 */
+	getTargetByTaskID(task_id:number): Target | null
+	{
+		let task = this.getTaskById(task_id);
+		if (task && task.target_id)
+		{
+			let target = this.getTargetById(task.target_id);
+			if (target)
+			{
+				return target;
+			}
+		}
+		return null;
+	}
+	
+
+	/**
 	 * Init columns
 	 */
 	static initColumns(state:TaskListPageState)

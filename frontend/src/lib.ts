@@ -1,4 +1,34 @@
 
+/**
+ * VueJS Mixin
+ */
+ export const mixin_lib =
+ {
+    methods:
+	{
+        attr(obj: any, keys: Array<string> | string, default_value: any = null)
+        {
+            if (keys instanceof String || typeof keys == "string")
+            {
+                let s = String(keys);
+                keys = new Array();
+                keys.push(s)
+            }
+
+            let res:any = obj;
+            for (let i=0; i<keys.length; i++)
+            {
+                let key:string = keys[i];
+                if (res[key] == undefined) return default_value;
+                res = res[key];
+            }
+
+            return res;
+        }
+    }
+ }
+
+
 export class BaseObject
 {
     /**
