@@ -19,7 +19,8 @@
  */
 
 require_once __DIR__ . "/vendor/autoload.php";
-require_once __DIR__ . "/Helper/core.php";
+require_once __DIR__ . "/helper/core.php";
+require_once __DIR__ . "/helper/lib.php";
 
 
 use \Symfony\Component\Console\Application;
@@ -34,22 +35,20 @@ function app_init()
 	build_container( require __DIR__ . "/defs.php" );
 
 	/* Includes routes */
-	addRoutesFromClass(\App\Routes\Targets::class);
-	addRoutesFromClass(\App\Routes\Tasks::class);
+	addRoute(\App\Routes\Targets::class);
+	addRoute(\App\Routes\Tasks::class);
+
+	/* Includes models */
+	addModel(\App\Models\Target::class);
+	addModel(\App\Models\Task::class);
+
+	/* Includes console commands */
+	addConsoleCommand(\App\Console\Hello::class);
 
 	/* Connect to database */
 	app()->get("db");
 }
 
-
-/**
- * Init web app
- */
-function console_init()
-{
-	$console = app()->get("console");
-	$console->add( new App\Console\HelloCommand() );
-}
 
 
 /**

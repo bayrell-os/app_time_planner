@@ -56,6 +56,9 @@ return
 			return $capsule;
 		},
 	"console" => DI\create(\Symfony\Component\Console\Application::class),
+	"routes_list" => DI\create(ListContainer::class),
+	"models_list" => DI\create(ListContainer::class),
+	"console_class_list" => DI\create(ListContainer::class),
 	\FastRoute\RouteParser::class => DI\create(\FastRoute\RouteParser\Std::class),
 	\FastRoute\DataGenerator::class => DI\create(\FastRoute\DataGenerator\GroupCountBased::class),
 	\FastRoute\RouteCollector::class => DI\autowire(\FastRoute\RouteCollector::class),

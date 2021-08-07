@@ -53,7 +53,7 @@ function build_container($defs)
 /**
  * Add routes from class
  */
-function addRoutesFromClass($class_name, $file_name = "")
+function addRoute($class_name, $file_name = "")
 {
 	if ($file_name != "")
 	{
@@ -63,7 +63,29 @@ function addRoutesFromClass($class_name, $file_name = "")
 	$router = app()->get(RouteCollector::class);
 	$obj = new $class_name();
 	$obj->routes($router);
+	app()->get("routes_list")->add($class_name);
 }
+
+
+
+/**
+ * Add console command
+ */
+function addModel($class_name)
+{
+	app()->get("models_list")->add($class_name);
+}
+
+
+
+/**
+ * Add console command
+ */
+function addConsoleCommand($class_name)
+{
+	app()->get("console_class_list")->add($class_name);
+}
+
 
 
 /**
@@ -86,8 +108,8 @@ function dispatch_uri($method, $uri)
 	$routeInfo = $dispatcher->dispatch($method, $uri);
 	switch ($routeInfo[0])
 	{
+		// ... 404 Not Found
 		case FastRoute\Dispatcher::NOT_FOUND:
-			// ... 404 Not Found
 
 			( new \ApiResult() )
 				->error( "404 Not Found", -1 )
@@ -98,9 +120,9 @@ function dispatch_uri($method, $uri)
 
 			break;
 
+		// ... 405 Method Not Allowed
 		case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
 			$allowedMethods = $routeInfo[1];
-			// ... 405 Method Not Allowed
 
 			( new \ApiResult() )
 				->error( "405 Method Not Allowed", -1 )
@@ -111,6 +133,7 @@ function dispatch_uri($method, $uri)
 
 			break;
 
+		// Found method
 		case FastRoute\Dispatcher::FOUND:
 			$handler = $routeInfo[1];
 			$vars = $routeInfo[2];
@@ -156,19 +179,21 @@ function dispatch_uri($method, $uri)
 
 
 /**
- * Load class from namespace app
+ * Dynamic load class from namespace app
  */
 function appLoadClass($name)
 {
 	$arr = explode("\\", $name);
-	
+	$prefix = "app";
+
 	if (count($arr) == 0) return;
 	if ($arr[0] != "App") return;
+	if ($arr[0] == "App") $prefix = "app";
 	$arr = array_slice($arr, 1);
 	$file_name = array_pop($arr) . ".php";
 	$dir_name = implode(DIRECTORY_SEPARATOR, $arr);
 	$file_path = dirname(__DIR__) . DIRECTORY_SEPARATOR .
-		"app" . DIRECTORY_SEPARATOR .	
+		$prefix . DIRECTORY_SEPARATOR .	
 		$dir_name . DIRECTORY_SEPARATOR .
 		$file_name;
 	if (file_exists($file_path) && is_file($file_path))
@@ -177,39 +202,6 @@ function appLoadClass($name)
 	}
 }
 spl_autoload_register('appLoadClass');
-
-
-/**
- * Intersect object
- */
-function object_intersect($item, $keys)
-{
-	$res = [];
-	if ($item instanceof \Illuminate\Database\Eloquent\Model)
-	{
-		$item = $item->getAttributes();
-	}
-	foreach ($item as $key => $val)
-	{
-		if (in_array($key, $keys))
-		{
-			$res[$key] = $val;
-		}
-	}
-	return $res;
-}
-
-
-/**
- * Intersect object
- */
-function object_intersect_curry($keys)
-{
-	return function ($item) use ($keys)
-	{
-		return object_intersect($item, $keys);
-	};
-}
 
 
 /**
@@ -299,5 +291,18 @@ class ApiResult
 			$this->status_code,
 			['content-type' => 'application/json']
 		);
+	}
+}
+
+
+/**
+ * Class list
+ */
+class ListContainer
+{
+	var $arr = [];
+	function add($item)
+	{
+		$this->arr[] = $item;
 	}
 }
