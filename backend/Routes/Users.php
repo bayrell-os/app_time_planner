@@ -21,6 +21,8 @@
 namespace App\Routes;
 
 use \FastRoute\RouteCollector;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 
 class Users
@@ -40,33 +42,70 @@ class Users
 	/**
 	 * Request before
 	 */
-	function request_before($vars)
+	function request_before(Request $request, ?Response $response, $vars)
 	{
+		return [$request, $response, $vars];
 	}
 
 
 	/**
 	 * Request after
 	 */
-	function request_after($vars)
+	function request_after(Request $request, ?Response $response, $vars)
 	{
+		return [$request, $response, $vars];
 	}
 
 
 	/**
 	 * Get users
 	 */
-	function getUsers($vars)
+	function getUsers(Request $request, ?Response $response, $vars)
 	{
-		echo "Users";
+		$db = app()->get("db");
+
+		$st = $db->query(
+			"select * from task"
+		);
+		$rows = $st->fetchAll(\PDO::FETCH_ASSOC);
+		$st->closeCursor();
+
+		$keys =
+		[
+			"id", "name", "gmdate", "status"
+		];
+		$rows = array_map( object_intersect_curry($keys), $rows );
+
+		$res =
+		[
+			"items" => $rows,
+			"error" =>
+			[
+				"str" => "",
+				"code" => 1,
+			],
+		];
+
+		$response = new Response(
+			json_encode($res),
+			Response::HTTP_OK,
+			['content-type' => 'application/json']
+		);
+
+		return [$request, $response, $vars];
 	}
 
 
 	/**
 	 * Get user by id
 	 */
-	function getUserById($vars)
+	function getUserById(Request $request, ?Response $response, $vars)
 	{
-		echo "User id = " . $vars["id"];
+		$response = new Response(
+			'User id = ' . $vars["id"],
+			Response::HTTP_OK,
+			['content-type' => 'text/html']
+		);
+		return [$request, $response, $vars];
 	}
 }

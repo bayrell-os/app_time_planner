@@ -22,6 +22,19 @@ use Psr\Container\ContainerInterface;
 
 return
 [
+	"db" =>
+		function (ContainerInterface $c)
+		{
+			$db = new App\Lib\Database();
+			$db->db_host = getenv("DB_HOSTNAME");
+			$db->db_port = getenv("DB_PORT");
+			$db->db_name = getenv("DB_NAME");
+			$db->db_username = getenv("DB_USERNAME");
+			$db->db_password = getenv("DB_PASSWORD");
+			$db->db_tz = getenv("TZ");
+			$db->connect();
+			return $db;
+		},
 	\FastRoute\RouteParser::class => DI\create(\FastRoute\RouteParser\Std::class),
 	\FastRoute\DataGenerator::class => DI\create(\FastRoute\DataGenerator\GroupCountBased::class),
 	\FastRoute\RouteCollector::class => DI\autowire(\FastRoute\RouteCollector::class),

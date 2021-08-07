@@ -19,15 +19,51 @@
  */
 
 require_once __DIR__ . "/vendor/autoload.php";
-require_once __DIR__ . "/lib.php";
-require_once __DIR__ . "/init.php";
+require_once __DIR__ . "/Lib/utils.php";
 
 
-/* Fetch method and URI from somewhere */
-$method = $_SERVER['REQUEST_METHOD'];
-$uri = $_SERVER['REQUEST_URI'];
+/**
+ * Init web app
+ */
+function app_init()
+{
+	/* Build container */
+	build_container( require __DIR__ . "/defs.php" );
 
-/* Remove api */
-$uri = preg_replace("/^\/api/", "", $uri);
+	/* Includes routes */
+	addRoutesFromClass(\App\Routes\Users::class);
 
-dispatch_uri($method, $uri);
+	/* Connect to database */
+	$db = app()->get("db");
+	if (!$db->isConnected())
+	{
+		header("Content-Type: application/json");
+		echo json_encode
+		([
+			"error" =>
+			[
+				"code" => -1,
+				"str" => $db->last_error_str,
+			]
+		]);
+		exit();
+	}
+}
+
+
+
+/**
+ * Run web app
+ */
+function app_run()
+{
+	/* Fetch method and URI from somewhere */
+	$method = $_SERVER['REQUEST_METHOD'];
+	$uri = $_SERVER['REQUEST_URI'];
+
+	/* Remove api */
+	$uri = preg_replace("/^\/api/", "", $uri);
+	$_SERVER['REQUEST_URI'] = $uri;
+
+	dispatch_uri($method, $uri);
+}

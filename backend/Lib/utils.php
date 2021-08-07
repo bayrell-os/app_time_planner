@@ -29,7 +29,7 @@ global $di_container;
 /**
  * Returns current container
  */
-function container()
+function app()
 {
 	global $di_container;
 	return $di_container;
@@ -58,7 +58,7 @@ function addRoutesFromClass($class_name, $file_name = "")
 		require_once $file_name;
 	}
 
-	$router = container()->get(RouteCollector::class);
+	$router = app()->get(RouteCollector::class);
 	$obj = new $class_name();
 	$obj->routes($router);
 }
@@ -70,8 +70,8 @@ function addRoutesFromClass($class_name, $file_name = "")
 function dispatch_uri($method, $uri)
 {
 	/* Create dispatcher */
-	$route_collector = container()->get(RouteCollector::class);
-	$dispatcher = container()->get(Dispatcher::class);
+	$route_collector = app()->get(RouteCollector::class);
+	$dispatcher = app()->get(Dispatcher::class);
 
 	/* Strip query string (?foo=bar) and decode URI */
 	if (false !== $pos = strpos($uri, '?'))
@@ -97,6 +97,10 @@ function dispatch_uri($method, $uri)
 			$handler = $routeInfo[1];
 			$vars = $routeInfo[2];
 
+			$request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+			//$request = new Slim\Psr7\Request();
+			$response = null;
+
 			if ($handler instanceof \Closure)
 			{
 				$handler($vars);
@@ -106,13 +110,27 @@ function dispatch_uri($method, $uri)
 				$obj = $handler[0];
 				if (is_object($obj))
 				{
-					$obj->request_before($vars);
+					list($request, $response, $vars) =
+						$obj->request_before($request, $response, $vars);
 				}
-				call_user_func_array($handler, [$vars]);
+				if ($response == null)
+				{
+					list($request, $response, $vars) = call_user_func_array
+					(
+						$handler,
+						[$request, $response, $vars]
+					);
+				}
 				if (is_object($obj))
 				{
-					$obj->request_after($vars);
+					list($request, $response, $vars) =
+						$obj->request_after($request, $response, $vars);
 				}
+			}
+			
+			if ($response != null)
+			{
+				$response->send();
 			}
 
 			break;
@@ -132,7 +150,7 @@ function appLoadClass($name)
 	$arr = array_slice($arr, 1);
 	$file_name = array_pop($arr) . ".php";
 	$dir_name = implode(DIRECTORY_SEPARATOR, $arr);
-	$file_path = __DIR__ . DIRECTORY_SEPARATOR .
+	$file_path = dirname(__DIR__) . DIRECTORY_SEPARATOR .
 		$dir_name . DIRECTORY_SEPARATOR .
 		$file_name;
 	if (file_exists($file_path) && is_file($file_path))
@@ -141,3 +159,40 @@ function appLoadClass($name)
 	}
 }
 spl_autoload_register('appLoadClass');
+
+
+/**
+ * Intersect object
+ */
+function object_intersect($item, $keys)
+{
+	$res = [];
+	foreach ($item as $key => $val)
+	{
+		if (in_array($key, $keys))
+		{
+			$res[$key] = $val;
+		}
+	}
+	return $res;
+}
+
+
+/**
+ * Intersect object
+ */
+function object_intersect_curry($keys)
+{
+	return function ($item) use ($keys)
+	{
+		$res = [];
+		foreach ($item as $key => $val)
+		{
+			if (in_array($key, $keys))
+			{
+				$res[$key] = $val;
+			}
+		}
+		return $res;
+	};
+}
