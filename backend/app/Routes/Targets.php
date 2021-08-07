@@ -21,13 +21,13 @@
 namespace App\Routes;
 
 use ApiResult;
-use App\Models\Task;
+use App\Models\Target;
 use FastRoute\RouteCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class Tasks
+class Targets
 {
 
 	/**
@@ -35,11 +35,11 @@ class Tasks
 	 */
 	function routes(RouteCollector $routes)
 	{
-		$routes->addRoute('GET', '/tasks/', [$this, "actionList"]);
-		$routes->addRoute('GET', '/tasks/{id:\d+}/', [$this, "actionGetById"]);
-		$routes->addRoute('POST', '/tasks/create/', [$this, "actionCreate"]);
-		$routes->addRoute('POST', '/tasks/edit/', [$this, "actionEdit"]);
-		$routes->addRoute('POST', '/tasks/delete/', [$this, "actionDelete"]);
+		$routes->addRoute('GET', '/targets/', [$this, "actionList"]);
+		$routes->addRoute('GET', '/targets/{id:\d+}/', [$this, "actionGetById"]);
+		$routes->addRoute('POST', '/targets/create/', [$this, "actionCreate"]);
+		$routes->addRoute('POST', '/targets/edit/', [$this, "actionEdit"]);
+		$routes->addRoute('POST', '/targets/delete/', [$this, "actionDelete"]);
 	}
 
 
@@ -73,18 +73,14 @@ class Tasks
 
 		try
 		{
-			$tasks = Task::all();
+			$targets = Target::all();
 
-			$tasks = $tasks->map->only([
+			$targets = $targets->map->only([
 				'id',
-				'target_id',
 				'name',
-				'gmdate',
-				'status',
-				'user_id',
 			]);
 
-			$api_result->success( $tasks );
+			$api_result->success( $targets );
 		}
 		catch (\Exception $e)
 		{

@@ -18,40 +18,17 @@
  *  limitations under the License.
  */
 
-require_once __DIR__ . "/vendor/autoload.php";
-require_once __DIR__ . "/Helper/core.php";
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
 
 
-/**
- * Init web app
- */
-function app_init()
+class Target extends Model
 {
-	/* Build container */
-	build_container( require __DIR__ . "/defs.php" );
-
-	/* Includes routes */
-	addRoutesFromClass(\App\Routes\Targets::class);
-	addRoutesFromClass(\App\Routes\Tasks::class);
-
-	/* Connect to database */
-	app()->get("db");
-}
-
-
-
-/**
- * Run web app
- */
-function app_run()
-{
-	/* Fetch method and URI from somewhere */
-	$method = $_SERVER['REQUEST_METHOD'];
-	$uri = $_SERVER['REQUEST_URI'];
-
-	/* Remove api */
-	$uri = preg_replace("/^\/api/", "", $uri);
-	$_SERVER['REQUEST_URI'] = $uri;
-
-	dispatch_uri($method, $uri);
+	protected $table = "targets";
+	protected $primaryKey = "id";
+	public $incrementing = true;
+	protected $attributes = [
+        "name" => "",
+    ];
 }

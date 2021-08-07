@@ -92,6 +92,7 @@ function dispatch_uri($method, $uri)
 			( new \ApiResult() )
 				->error( "404 Not Found", -1 )
 				->getResponse()
+				->setStatusCode(Response::HTTP_NOT_FOUND)
 				->send()
 			;
 
@@ -100,6 +101,14 @@ function dispatch_uri($method, $uri)
 		case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
 			$allowedMethods = $routeInfo[1];
 			// ... 405 Method Not Allowed
+
+			( new \ApiResult() )
+				->error( "405 Method Not Allowed", -1 )
+				->getResponse()
+				->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED)
+				->send()
+			;
+
 			break;
 
 		case FastRoute\Dispatcher::FOUND:
@@ -212,8 +221,10 @@ class ApiResult
 	var $error_code = 0;
 	var $error_name = "";
 	var $error_str = "";
+	var $status_code = Response::HTTP_OK;
 
 
+	
 	/**
 	 * Success
 	 */
@@ -237,6 +248,22 @@ class ApiResult
 		$this->error_code = $error_code;
 		return $this;
 	}
+
+
+
+	/**
+	 * Exception
+	 */
+	function exception($e)
+	{
+		$this->clearError();
+		$this->error_str = $e->getMessage();
+		$this->error_code = $e->getErrorCode();
+		$this->error_name = get_class($e);
+		$this->status_code = Response::HTTP_INTERNAL_SERVER_ERROR;
+		return $this;
+	}
+
 
 
 	/**
@@ -269,7 +296,7 @@ class ApiResult
 		];
 		return new Response(
 			json_encode($res),
-			Response::HTTP_OK,
+			$this->status_code,
 			['content-type' => 'application/json']
 		);
 	}
