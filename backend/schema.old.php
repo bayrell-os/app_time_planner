@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Database\Capsule\Manager as Capsule;
-
 /*
-Capsule::schema()
+$migrations = app()->get("Migration");
+
+$migrations
 	->create('tasks', function ($table) {
 		$table->bigIncrements('id');
 		$table->string('name');
@@ -11,9 +11,13 @@ Capsule::schema()
 	})
 ;
 
-Capsule::schema()
+$migrations
 	->create('targets', function ($table) {
 		$table->bigIncrements('id');
 		$table->string('name');
 	})
-;*/
+;
+*/
+
+$migrations = app()->get("migrations_list");
+var_dump($migrations);

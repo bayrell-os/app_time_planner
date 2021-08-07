@@ -18,44 +18,27 @@
  *  limitations under the License.
  */
 
+namespace Helper;
 
-/**
- * Get app
- */
-function app()
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Phinx\Migration\AbstractMigration;
+
+
+class Migration extends AbstractMigration
 {
-	return \Helper\Core::$di_container->get("App");
-}
+    /** @var \Illuminate\Database\Capsule\Manager $capsule */
+    public $capsule;
+	
+    /** @var \Illuminate\Database\Schema\Builder $capsule */
+    public $schema;
 
-
-/**
- * Intersect object
- */
-function object_intersect($item, $keys)
-{
-	$res = [];
-	if ($item instanceof \Illuminate\Database\Eloquent\Model)
-	{
-		$item = $item->getAttributes();
-	}
-	foreach ($item as $key => $val)
-	{
-		if (in_array($key, $keys))
+    public function init()
+    {
+        $this->capsule = app()->get("db");
+        $this->schema = $this->capsule->schema();
+		$this->schema->blueprintResolver(function($table, $callback)
 		{
-			$res[$key] = $val;
-		}
-	}
-	return $res;
-}
-
-
-/**
- * Intersect object
- */
-function object_intersect_curry($keys)
-{
-	return function ($item) use ($keys)
-	{
-		return object_intersect($item, $keys);
-	};
+			return new CustomBlueprint($table, $callback);
+		});
+    }
 }

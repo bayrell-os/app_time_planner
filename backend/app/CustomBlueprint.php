@@ -18,44 +18,14 @@
  *  limitations under the License.
  */
 
+namespace Helper;
 
-/**
- * Get app
- */
-function app()
+class CustomBlueprint extends \Illuminate\Database\Schema\Blueprint
 {
-	return \Helper\Core::$di_container->get("App");
-}
-
-
-/**
- * Intersect object
- */
-function object_intersect($item, $keys)
-{
-	$res = [];
-	if ($item instanceof \Illuminate\Database\Eloquent\Model)
-	{
-		$item = $item->getAttributes();
-	}
-	foreach ($item as $key => $val)
-	{
-		if (in_array($key, $keys))
-		{
-			$res[$key] = $val;
-		}
-	}
-	return $res;
-}
-
-
-/**
- * Intersect object
- */
-function object_intersect_curry($keys)
-{
-	return function ($item) use ($keys)
-	{
-		return object_intersect($item, $keys);
-	};
+    public function build(Connection $connection, Grammar $grammar)
+    {
+        foreach ($this->toSql($connection, $grammar) as $statement) {
+			app()->get("migrations_list")->add($statement);
+        }
+    }
 }

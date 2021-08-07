@@ -1,20 +1,14 @@
 #!/usr/bin/env php
 <?php
 
-require __DIR__ . '/app.php';
+require __DIR__ . '/vendor/autoload.php';
 
-/* Init app */
-app_init();
+\Helper\Core::buildContainer( __DIR__ . "/../../vendor/defs.php" );
 
-/* Create console */
-$console = app()->get("console");
-
-/* Register console commands */
-$console_class_list = app()->get("console_class_list");
-foreach ($console_class_list->arr as $class_name)
-{
-	$console->add( new $class_name() );
-}
+/* Create app */
+$app = app();
+$app->init();
+$console = $app->createConsoleApp();
 
 /* Run console */
 $console->run();

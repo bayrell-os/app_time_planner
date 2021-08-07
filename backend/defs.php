@@ -21,10 +21,14 @@
 use Psr\Container\ContainerInterface;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
+use Illuminate\Database\Connection;
+use Illuminate\Database\Schema\Grammars\Grammar;
 use Illuminate\Database\Capsule\Manager as Capsule;
+
 
 return
 [
+	"App" => DI\create(\App\Instance::class),
 	"db" =>
 		function (ContainerInterface $c)
 		{
@@ -51,14 +55,28 @@ return
 			// Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
 			$capsule->bootEloquent();
 
-			require_once __DIR__ . "/schema.php";
+			// require_once __DIR__ . "/schema.php";
 
 			return $capsule;
 		},
-	"console" => DI\create(\Symfony\Component\Console\Application::class),
-	"routes_list" => DI\create(ListContainer::class),
-	"models_list" => DI\create(ListContainer::class),
-	"console_class_list" => DI\create(ListContainer::class),
+
+		/*
+	"migrations" => function (ContainerInterface $c)
+		{
+			$schema = Capsule::schema();
+			$schema->blueprintResolver(function($table, $callback) {
+				return new \App\CustomBlueprint($table, $callback);
+			});
+			return $schema;
+		},
+
+	"Migration" => function (ContainerInterface $c)
+		{
+			$migration = new \Helper\Migration();
+			return $migration;
+		},
+*/
+
 	\FastRoute\RouteParser::class => DI\create(\FastRoute\RouteParser\Std::class),
 	\FastRoute\DataGenerator::class => DI\create(\FastRoute\DataGenerator\GroupCountBased::class),
 	\FastRoute\RouteCollector::class => DI\autowire(\FastRoute\RouteCollector::class),

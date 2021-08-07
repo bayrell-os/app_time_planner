@@ -18,44 +18,32 @@
  *  limitations under the License.
  */
 
+namespace Helper;
 
-/**
- * Get app
- */
-function app()
+
+class Core
 {
-	return \Helper\Core::$di_container->get("App");
-}
+
+	static $di_container = null;
 
 
-/**
- * Intersect object
- */
-function object_intersect($item, $keys)
-{
-	$res = [];
-	if ($item instanceof \Illuminate\Database\Eloquent\Model)
+	/**
+	 * Build container
+	 */
+	static function buildContainer($defs)
 	{
-		$item = $item->getAttributes();
+		$container_builder = new \DI\ContainerBuilder();
+		$container_builder->addDefinitions($defs);
+		static::$di_container = $container_builder->build();
 	}
-	foreach ($item as $key => $val)
+
+
+	/**
+	 * Get app instance
+	 */
+	static function app()
 	{
-		if (in_array($key, $keys))
-		{
-			$res[$key] = $val;
-		}
+		return static::$di_container->get("App");
 	}
-	return $res;
 }
 
-
-/**
- * Intersect object
- */
-function object_intersect_curry($keys)
-{
-	return function ($item) use ($keys)
-	{
-		return object_intersect($item, $keys);
-	};
-}

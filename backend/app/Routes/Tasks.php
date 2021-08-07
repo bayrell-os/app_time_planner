@@ -20,7 +20,7 @@
 
 namespace App\Routes;
 
-use ApiResult;
+use Helper\ApiResult;
 use App\Models\Task;
 use FastRoute\RouteCollector;
 use Symfony\Component\HttpFoundation\Request;
