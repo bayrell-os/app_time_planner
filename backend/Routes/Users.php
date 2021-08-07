@@ -18,7 +18,7 @@
  *  limitations under the License.
  */
 
-namespace App;
+namespace App\Routes;
 
 use \FastRoute\RouteCollector;
 

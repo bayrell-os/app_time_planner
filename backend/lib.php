@@ -118,3 +118,26 @@ function dispatch_uri($method, $uri)
 			break;
 	}
 }
+
+
+/**
+ * Load class from namespace app
+ */
+function appLoadClass($name)
+{
+	$arr = explode("\\", $name);
+	
+	if (count($arr) == 0) return;
+	if ($arr[0] != "App") return;
+	$arr = array_slice($arr, 1);
+	$file_name = array_pop($arr) . ".php";
+	$dir_name = implode(DIRECTORY_SEPARATOR, $arr);
+	$file_path = __DIR__ . DIRECTORY_SEPARATOR .
+		$dir_name . DIRECTORY_SEPARATOR .
+		$file_name;
+	if (file_exists($file_path) && is_file($file_path))
+	{
+		require_once $file_path;
+	}
+}
+spl_autoload_register('appLoadClass');

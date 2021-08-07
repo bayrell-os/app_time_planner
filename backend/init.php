@@ -22,4 +22,4 @@
 build_container( require __DIR__ . "/defs.php" );
 
 /* Includes routes */
-addRoutesFromClass(\App\Users::class, __DIR__ . "/api/users.php");
+addRoutesFromClass(\App\Routes\Users::class);
