@@ -1,7 +1,4 @@
 {
-    "python.envFile": "${workspaceRoot}/.env",
-    "python.linting.flake8Enabled": true,
-    "python.linting.flake8Args": ["--ignore=E201,E202,F401,W391,ANN101,E501,E251,W292,W293,E301,E302,E303,E128,E124"],
-    "python.linting.pylintEnabled": false,
-    "python.linting.mypyEnabled": true,
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,    
 }
