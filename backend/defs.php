@@ -19,21 +19,39 @@
  */
 
 use Psr\Container\ContainerInterface;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Container\Container;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 return
 [
 	"db" =>
 		function (ContainerInterface $c)
 		{
-			$db = new App\Lib\Database();
-			$db->db_host = getenv("DB_HOSTNAME");
-			$db->db_port = getenv("DB_PORT");
-			$db->db_name = getenv("DB_NAME");
-			$db->db_username = getenv("DB_USERNAME");
-			$db->db_password = getenv("DB_PASSWORD");
-			$db->db_tz = getenv("TZ");
-			$db->connect();
-			return $db;
+			$capsule = new Capsule;
+			$capsule->addConnection([
+				'driver'    => 'mysql',
+				'host'      => getenv("DB_HOSTNAME"),
+				'database'  => getenv("DB_NAME"),
+				'username'  => getenv("DB_USERNAME"),
+				'password'  => getenv("DB_PASSWORD"),
+				'charset'   => 'utf8',
+				'collation' => 'utf8_unicode_ci',
+				'prefix'    => '',
+			]);
+
+			// $capsule->setEventDispatcher(new Dispatcher(new Container));
+
+			// Set the cache manager instance used by connections... (optional)
+			//$capsule->setCacheManager();
+
+			// Make this Capsule instance available globally via static methods... (optional)
+			$capsule->setAsGlobal();
+
+			// Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
+			$capsule->bootEloquent();
+
+			return $capsule;
 		},
 	\FastRoute\RouteParser::class => DI\create(\FastRoute\RouteParser\Std::class),
 	\FastRoute\DataGenerator::class => DI\create(\FastRoute\DataGenerator\GroupCountBased::class),

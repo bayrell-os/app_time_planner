@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class Users
+class Tasks
 {
 
 	/**
@@ -33,9 +33,9 @@ class Users
 	 */
 	function routes(RouteCollector $routes)
 	{
-		// Users list
-		$routes->addRoute('GET', '/users/', [$this, "getUsers"]);
-		$routes->addRoute('GET', '/user/{id:\d+}/', [$this, "getUserById"]);
+		// Tasks list
+		$routes->addRoute('GET', '/tasks/', [$this, "getTasks"]);
+		$routes->addRoute('GET', '/tasks/{id:\d+}/', [$this, "getTaskById"]);
 	}
 
 
@@ -60,46 +60,32 @@ class Users
 	/**
 	 * Get users
 	 */
-	function getUsers(Request $request, ?Response $response, $vars)
+	function getTasks(Request $request, ?Response $response, $vars)
 	{
-		$db = app()->get("db");
-
-		$st = $db->query(
-			"select * from task"
-		);
-		$rows = $st->fetchAll(\PDO::FETCH_ASSOC);
-		$st->closeCursor();
+		$users = \App\Models\Task::all();
 
 		$keys =
 		[
 			"id", "name", "gmdate", "status"
 		];
-		$rows = array_map( object_intersect_curry($keys), $rows );
+		$rows = array_map( object_intersect_curry($keys), $users->all() );
 
-		$res =
-		[
-			"items" => $rows,
-			"error" =>
-			[
-				"str" => "",
-				"code" => 1,
-			],
-		];
+		$result = ( new \ApiResult() )
+			->success( $rows )
+		;
 
-		$response = new Response(
-			json_encode($res),
-			Response::HTTP_OK,
-			['content-type' => 'application/json']
-		);
-
-		return [$request, $response, $vars];
+		return [
+			$request, 
+			$result->getResponse(), 
+			$vars
+	];
 	}
 
 
 	/**
-	 * Get user by id
+	 * Get task by id
 	 */
-	function getUserById(Request $request, ?Response $response, $vars)
+	function getTaskById(Request $request, ?Response $response, $vars)
 	{
 		$response = new Response(
 			'User id = ' . $vars["id"],

@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-use \FastRoute\RouteCollector;
-use \FastRoute\Dispatcher;
+use FastRoute\RouteCollector;
+use FastRoute\Dispatcher;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 
 /* Global container */
@@ -86,6 +88,13 @@ function dispatch_uri($method, $uri)
 	{
 		case FastRoute\Dispatcher::NOT_FOUND:
 			// ... 404 Not Found
+
+			( new \ApiResult() )
+				->error( "404 Not Found", -1 )
+				->getResponse()
+				->send()
+			;
+
 			break;
 
 		case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
@@ -98,7 +107,6 @@ function dispatch_uri($method, $uri)
 			$vars = $routeInfo[2];
 
 			$request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
-			//$request = new Slim\Psr7\Request();
 			$response = null;
 
 			if ($handler instanceof \Closure)
@@ -151,6 +159,7 @@ function appLoadClass($name)
 	$file_name = array_pop($arr) . ".php";
 	$dir_name = implode(DIRECTORY_SEPARATOR, $arr);
 	$file_path = dirname(__DIR__) . DIRECTORY_SEPARATOR .
+		"app" . DIRECTORY_SEPARATOR .	
 		$dir_name . DIRECTORY_SEPARATOR .
 		$file_name;
 	if (file_exists($file_path) && is_file($file_path))
@@ -167,6 +176,10 @@ spl_autoload_register('appLoadClass');
 function object_intersect($item, $keys)
 {
 	$res = [];
+	if ($item instanceof \Illuminate\Database\Eloquent\Model)
+	{
+		$item = $item->getAttributes();
+	}
 	foreach ($item as $key => $val)
 	{
 		if (in_array($key, $keys))
@@ -185,14 +198,79 @@ function object_intersect_curry($keys)
 {
 	return function ($item) use ($keys)
 	{
-		$res = [];
-		foreach ($item as $key => $val)
-		{
-			if (in_array($key, $keys))
-			{
-				$res[$key] = $val;
-			}
-		}
-		return $res;
+		return object_intersect($item, $keys);
 	};
+}
+
+
+/**
+ * Api Result
+ */
+class ApiResult
+{
+	var $data = null;
+	var $error_code = 0;
+	var $error_name = "";
+	var $error_str = "";
+
+
+	/**
+	 * Success
+	 */
+	function success($data)
+	{
+		$this->data = $data;
+		$this->clearError();
+		$this->error_code = 1;
+		return $this;
+	}
+
+
+
+	/**
+	 * Error
+	 */
+	function error($error_str = "", $error_code = -1)
+	{
+		$this->clearError();
+		$this->error_str = $error_str;
+		$this->error_code = $error_code;
+		return $this;
+	}
+
+
+	/**
+	 * Clear error
+	 */
+	function clearError()
+	{
+		$this->error_code = 0;
+		$this->error_name = "";
+		$this->error_str = "";
+		return $this;
+	}
+
+
+
+	/**
+	 * Returns response
+	 */
+	function getResponse()
+	{
+		$res =
+		[
+			"data" => $this->data,
+			"error" =>
+			[
+				"code" => $this->error_code,
+				"name" => $this->error_name,
+				"str" => $this->error_str,
+			],
+		];
+		return new Response(
+			json_encode($res),
+			Response::HTTP_OK,
+			['content-type' => 'application/json']
+		);
+	}
 }
