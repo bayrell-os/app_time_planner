@@ -22,6 +22,9 @@ require_once __DIR__ . "/vendor/autoload.php";
 require_once __DIR__ . "/Helper/core.php";
 
 
+use \Symfony\Component\Console\Application;
+
+
 /**
  * Init web app
  */
@@ -38,6 +41,15 @@ function app_init()
 	app()->get("db");
 }
 
+
+/**
+ * Init web app
+ */
+function console_init()
+{
+	$console = app()->get("console");
+	$console->add( new App\Console\HelloCommand() );
+}
 
 
 /**

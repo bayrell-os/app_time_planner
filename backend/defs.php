@@ -51,8 +51,11 @@ return
 			// Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
 			$capsule->bootEloquent();
 
+			require_once __DIR__ . "/schema.php";
+
 			return $capsule;
 		},
+	"console" => DI\create(\Symfony\Component\Console\Application::class),
 	\FastRoute\RouteParser::class => DI\create(\FastRoute\RouteParser\Std::class),
 	\FastRoute\DataGenerator::class => DI\create(\FastRoute\DataGenerator\GroupCountBased::class),
 	\FastRoute\RouteCollector::class => DI\autowire(\FastRoute\RouteCollector::class),
