@@ -70,8 +70,22 @@ class ApiResult
 	{
 		$this->clearError();
 		$this->error_str = $e->getMessage();
-		$this->error_code = $e->getErrorCode();
-		$this->error_name = get_class($e);
+		$this->error_code = $e->getCode();
+		$this->error_name = str_replace("\\", ".", get_class($e));
+		if ($this->error_code >= 0)
+		{
+			$this->error_code = -1;
+		}
+		return $this;
+	}
+
+
+
+	/**
+	 * Exception
+	 */
+	function internalError()
+	{
 		$this->status_code = Response::HTTP_INTERNAL_SERVER_ERROR;
 		return $this;
 	}
@@ -106,8 +120,9 @@ class ApiResult
 				"str" => $this->error_str,
 			],
 		];
-		return new Response(
-			json_encode($res),
+		return new Response
+		(
+			json_encode($res) . "\n",
 			$this->status_code,
 			['content-type' => 'application/json']
 		);

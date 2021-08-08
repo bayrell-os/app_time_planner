@@ -18,21 +18,14 @@
  *  limitations under the License.
  */
 
-use Psr\Container\ContainerInterface;
+namespace Helper\Exception;
 
 
-return
-[
-	"App" => DI\create(\App\Instance::class),
-	"db" => DI\factory([\App\Instance::class, 'createDatabase']),
-	
-	\FastRoute\RouteParser::class => DI\create(\FastRoute\RouteParser\Std::class),
-	\FastRoute\DataGenerator::class => DI\create(\FastRoute\DataGenerator\GroupCountBased::class),
-	\FastRoute\RouteCollector::class => DI\autowire(\FastRoute\RouteCollector::class),
-	\FastRoute\Dispatcher::class =>
-		function (ContainerInterface $c)
-		{
-			$router = $c->get(\FastRoute\RouteCollector::class);
-			return new \FastRoute\Dispatcher\GroupCountBased( $router->getData() );
-		},
-];
+class NotFoundException extends \Exception
+{
+    public function __construct($message = 'Item', Throwable $previous = null)
+    {
+        $this->message = $message . " not found";
+        $this->code = \Helper\App::ERROR_NOT_FOUND;
+    }
+}

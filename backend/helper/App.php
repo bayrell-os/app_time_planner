@@ -20,8 +20,9 @@
 
 namespace Helper;
 
-use FastRoute\RouteCollector;
-use FastRoute\Dispatcher;
+use Illuminate\Database\Connection;
+use Illuminate\Database\Schema\Grammars\Grammar;
+use Illuminate\Database\Capsule\Manager as Capsule;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,7 +33,9 @@ class App
 	var $models = [];
 	var $commands = [];
 
-	
+	const ERROR_NOT_FOUND = -2;
+
+
 	/**
 	 * Get instance
 	 */
@@ -53,6 +56,24 @@ class App
 
 
 	/**
+	 * Web app run
+	 */
+	function run()
+	{
+		/* Fetch method and URI from somewhere */
+		$method = $_SERVER['REQUEST_METHOD'];
+		$uri = $_SERVER['REQUEST_URI'];
+
+		/* Remove api */
+		$uri = preg_replace("/^\/api/", "", $uri);
+		$_SERVER['REQUEST_URI'] = $uri;
+
+		$this->dispatchUri($method, $uri);
+	}
+
+
+	
+	/**
 	 * Add routes from class
 	 */
 	function addRoute($class_name, $file_name = "")
@@ -62,7 +83,7 @@ class App
 			require_once $file_name;
 		}
 
-		$router = app()->get(RouteCollector::class);
+		$router = app()->get(\FastRoute\RouteCollector::class);
 		$obj = new $class_name();
 		$obj->routes($router);
 		$this->routes[] = $class_name;
@@ -95,7 +116,7 @@ class App
 	 */
 	function methodNotFound($routeInfo)
 	{
-		( new \ApiResult() )
+		( new ApiResult() )
 			->error( "404 Not Found", -1 )
 			->getResponse()
 			->setStatusCode(Response::HTTP_NOT_FOUND)
@@ -110,7 +131,7 @@ class App
 	 */
 	function methodNotAllowed($routeInfo)
 	{
-		( new \ApiResult() )
+		( new ApiResult() )
 			->error( "405 Method Not Allowed", -1 )
 			->getResponse()
 			->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED)
@@ -172,8 +193,8 @@ class App
 	function dispatchUri($method, $uri)
 	{
 		/* Create dispatcher */
-		$route_collector = app()->get(RouteCollector::class);
-		$dispatcher = app()->get(Dispatcher::class);
+		$route_collector = app()->get(\FastRoute\RouteCollector::class);
+		$dispatcher = app()->get(\FastRoute\Dispatcher::class);
 
 		/* Strip query string (?foo=bar) and decode URI */
 		if (false !== $pos = strpos($uri, '?'))
@@ -207,29 +228,10 @@ class App
 
 
 	/**
-	 * Web app run
-	 */
-	function run()
-	{
-		/* Fetch method and URI from somewhere */
-		$method = $_SERVER['REQUEST_METHOD'];
-		$uri = $_SERVER['REQUEST_URI'];
-
-		/* Remove api */
-		$uri = preg_replace("/^\/api/", "", $uri);
-		$_SERVER['REQUEST_URI'] = $uri;
-
-		$this->dispatchUri($method, $uri);
-	}
-
-
-
-	/**
 	 * Console app created
 	 */
-	function consoleAppCreated($app)
+	function consoleAppCreated()
 	{
-		return $app;
 	}
 
 
@@ -239,17 +241,48 @@ class App
 	 */
 	function createConsoleApp()
 	{
-		$app = new \Symfony\Component\Console\Application();
+		$this->console = new \Symfony\Component\Console\Application();
 		
 		/* Register console commands */
-		$console_class_list = app()->get("console_class_list");
-		foreach ($console_class_list->arr as $class_name)
+		foreach ($this->commands as $class_name)
 		{
-			$console->add( new $class_name() );
+			$this->console->add( new $class_name() );
 		}
 
-		$app = $this->consoleAppCreated($app);
+		$this->consoleAppCreated();
 
-		return $app;
+		return $this->console;
+	}
+
+
+	/**
+	 * Create database
+	 */
+	static function createDatabase()
+	{
+		$capsule = new Capsule;
+		$capsule->addConnection([
+			'driver'    => 'mysql',
+			'host'      => getenv("DB_HOSTNAME"),
+			'database'  => getenv("DB_NAME"),
+			'username'  => getenv("DB_USERNAME"),
+			'password'  => getenv("DB_PASSWORD"),
+			'charset'   => 'utf8',
+			'collation' => 'utf8_unicode_ci',
+			'prefix'    => '',
+		]);
+
+		// $capsule->setEventDispatcher(new Dispatcher(new Container));
+
+		// Set the cache manager instance used by connections... (optional)
+		//$capsule->setCacheManager();
+
+		// Make this Capsule instance available globally via static methods... (optional)
+		$capsule->setAsGlobal();
+
+		// Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
+		$capsule->bootEloquent();
+
+		return $capsule;
 	}
 }

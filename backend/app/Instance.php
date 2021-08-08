@@ -40,6 +40,7 @@ class Instance extends \Helper\App
 		$this->addConsoleCommand(\App\Console\Hello::class);
 
 		/* Phinx */
+		/*
 		$this->addConsoleCommand(\Phinx\Console\Command\Breakpoint::class);
 		$this->addConsoleCommand(\Phinx\Console\Command\Create::class);
 		$this->addConsoleCommand(\Phinx\Console\Command\Init::class);
@@ -50,7 +51,7 @@ class Instance extends \Helper\App
 		$this->addConsoleCommand(\Phinx\Console\Command\SeedRun::class);
 		$this->addConsoleCommand(\Phinx\Console\Command\Status::class);
 		$this->addConsoleCommand(\Phinx\Console\Command\Test::class);
-
+		*/
 		/* Connect to database */
 		$this->get("db");
 	}

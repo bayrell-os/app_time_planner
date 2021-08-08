@@ -28,6 +28,7 @@ class Target extends Model
 	protected $table = "targets";
 	protected $primaryKey = "id";
 	public $incrementing = true;
+	public $timestamps = false;
 	protected $attributes = [
         "name" => "",
     ];
