@@ -20,147 +20,45 @@
 
 namespace App\Routes;
 
-use Helper\ApiResult;
 use App\Models\Task;
 use FastRoute\RouteCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use TinyPHP\ApiResult;
+use TinyPHP\Rules\AllowFields;
+use TinyPHP\Rules\ReadOnly;
 
 
-class Tasks
+class Tasks extends \TinyPHP\ApiRoute
 {
+	var $class_name = Task::class;
+    var $api_path = "tasks";
 
-	/**
-	 * Declare routes
-	 */
-	function routes(RouteCollector $routes)
-	{
-		$routes->addRoute('GET', '/tasks/', [$this, "actionList"]);
-		$routes->addRoute('GET', '/tasks/{id:\d+}/', [$this, "actionGetById"]);
-		$routes->addRoute('POST', '/tasks/create/', [$this, "actionCreate"]);
-		$routes->addRoute('POST', '/tasks/edit/', [$this, "actionEdit"]);
-		$routes->addRoute('POST', '/tasks/delete/', [$this, "actionDelete"]);
-	}
-
-
-
-	/**
-	 * Request before
-	 */
-	function request_before(Request $request, ?Response $response, $vars)
-	{
-		return [$request, $response, $vars];
-	}
-
-
-
-	/**
-	 * Request after
-	 */
-	function request_after(Request $request, ?Response $response, $vars)
-	{
-		return [$request, $response, $vars];
-	}
-
-
-
-	/**
-	 * List action
-	 */
-	function actionList(Request $request, ?Response $response, $vars)
-	{
-		$api_result = new ApiResult();
-
-		try
-		{
-			$tasks = Task::all();
-
-			$tasks = $tasks->map->only([
-				'id',
-				'target_id',
-				'name',
-				'gmdate',
-				'status',
-				'user_id',
-			]);
-
-			$api_result->success( $tasks );
-		}
-		catch (\Exception $e)
-		{
-			$api_result->exception( $e );
-		}
-
-		return [
-			$request, 
-			$api_result->getResponse(), 
-			$vars
-		];
-	}
-
-
-
-	/**
-	 * Create action
-	 */
-	function actionCreate(Request $request, ?Response $response, $vars)
-	{
-		$api_result = new ApiResult();
-
-		return [
-			$request, 
-			$api_result->getResponse(), 
-			$vars
-		];
-	}
-
-
-
-	/**
-	 * Edit action
-	 */
-	function actionEdit(Request $request, ?Response $response, $vars)
-	{
-		$api_result = new ApiResult();
-		
-		return [
-			$request, 
-			$api_result->getResponse(), 
-			$vars
-		];
-	}
-
-
-
-	/**
-	 * Delete action
-	 */
-	function actionDelete(Request $request, ?Response $response, $vars)
-	{
-		$api_result = new ApiResult();
-		
-		return [
-			$request, 
-			$api_result->getResponse(), 
-			$vars
-		];
-	}
-
-
-
-	/**
-	 * Get by id action
-	 */
-	function actionGetById(Request $request, ?Response $response, $vars)
-	{
-		$id = isset($vars["id"]) ? $vars["id"] : "";
-		$api_result = new ApiResult();
-		
-		return [
-			$request, 
-			$api_result->getResponse(), 
-			$vars
-		];
-	}
 	
+	/**
+	 * Get rules
+	 */
+	function rules()
+	{
+		return
+		[
+			new AllowFields
+			([
+				"fields" =>
+				[
+					"id",
+					"target_id",
+					"name",
+					"gmdate",
+					"status",
+					"user_id",
+				]
+			]),
+			new ReadOnly
+			([
+				"api_name" => "id",
+			])
+		];
+	}
+
 }

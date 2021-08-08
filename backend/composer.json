@@ -1,9 +1,9 @@
 {
 	"autoload": {
-		"files": ["helper/lib.php"],
+		"files": ["tiny-php/src/lib.php"],
 		"psr-4": {
 			"App\\": "app",
-			"Helper\\": "helper"
+			"TinyPHP\\": "tiny-php/src"
 		}
 	},
     "require": {

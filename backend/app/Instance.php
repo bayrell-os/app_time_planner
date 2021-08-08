@@ -20,7 +20,7 @@
 
 namespace App;
 
-class Instance extends \Helper\App
+class Instance extends \TinyPHP\App
 {
 	
 	/**

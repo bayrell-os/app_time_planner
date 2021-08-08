@@ -3,7 +3,7 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-\Helper\Core::buildContainer( __DIR__ . "/../../vendor/defs.php" );
+\TinyPHP\Core::buildContainer( __DIR__ . "/../../vendor/defs.php" );
 
 /* Create app */
 $app = app();
