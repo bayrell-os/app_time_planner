@@ -1,6 +1,10 @@
 # Backend
-backend/.vscode
-backend/backend
+backend/vendor
+backend/.idea
+backend/Homestead.json
+backend/Homestead.yaml
+backend/.env
+backend/.phpunit.result.cache
 
 # Frontend
 frontend/var
