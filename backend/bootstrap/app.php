@@ -22,11 +22,6 @@ $env->set("DB_PASSWORD", getenv("DB_PASSWORD"));
 $env->set("CACHE_DRIVER", "file");
 $env->set("QUEUE_CONNECTION", "sync");
 
-/**
-(new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
-    dirname(__DIR__)
-))->bootstrap();
- */
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +40,7 @@ $app = new Laravel\Lumen\Application(
 
 // $app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------

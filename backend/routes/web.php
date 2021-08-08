@@ -14,5 +14,16 @@
 */
 
 $router->get('/', function () use ($router) {
+    //var_dump($_SERVER['REQUEST_URI']);
     return $router->app->version();
 });
+
+\App\Http\Controllers\TaskController::registerRoutes($router);
+\App\Http\Controllers\TargetController::registerRoutes($router);
+
+
+/*
+$router->group(['prefix' => 'api'], function () use ($router) {
+    
+});
+*/
