@@ -38,7 +38,7 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
+$app->withFacades();
 
 $app->withEloquent();
 
@@ -57,7 +57,6 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
-
 $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
     App\Console\Kernel::class
@@ -121,10 +120,15 @@ $app->configure('app');
 |
 */
 
-$app->router->group([
-    'namespace' => 'App\Http\Controllers',
-], function ($router) {
-    require __DIR__.'/../routes/web.php';
+$app->router->group([ 'namespace' => 'App\Http\Controllers' ], function ($router) {
+    
+    $router->get('/', function () use ($router) {
+        return "Hello";
+    });
+
+    \App\Http\Controllers\TaskController::registerRoutes($router);
+    \App\Http\Controllers\TargetController::registerRoutes($router);
+
 });
 
 return $app;

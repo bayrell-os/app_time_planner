@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use App\Models\Task;
 use App\Exceptions\ItemNotFound;
@@ -10,7 +11,7 @@ use App\Exceptions\ItemNotFound;
 /**
  * Api controller
  */
-class ApiController extends BaseController
+abstract class ApiController extends BaseController
 {
     var $action = "";
     var $model_name = "";
@@ -64,6 +65,15 @@ class ApiController extends BaseController
     public function getApiResponse()
     {
         return response()->json($this->api_result);
+    }
+
+
+    /**
+     * Validate reuest
+     */
+    public function validateRequest(Request $request)
+    {
+        return true;
     }
 
 
@@ -145,7 +155,7 @@ class ApiController extends BaseController
 
         if ($item == null)
         {
-            $this->setApiException( new ItemNotFound() );
+            throw new ItemNotFound();
         }
         else
         {
@@ -168,12 +178,21 @@ class ApiController extends BaseController
         $this->action = "actionCreate";
         $class_name = $this->model_name;
 
+        /* Validate */
+        if (!$this->validateRequest($request))
+        {
+            return $this->getApiResponse();    
+        }
+
         /* Get post data */
-        $item = $request->all();
+        $post = $request->all();
+        $data = isset($post["data"]) ? $post["data"] : [];
 
         /* Create item */
-        $item = $this->toDatabase($item);
-        $item = $class_name::create($item);
+        $data = $this->toDatabase($data);
+        $item = new $class_name();
+        foreach ($data as $key => $value) $item->$key = $value;
+        $item->save();
         $result = $this->fromDatabase($item);
         
         /* Set result */
@@ -191,22 +210,29 @@ class ApiController extends BaseController
     {
         $this->action = "actionUpdate";
 
+        /* Validate */
+        if (!$this->validateRequest($request))
+        {
+            return $this->getApiResponse();    
+        }
+
         /* Find items */
         $item = $this->findItemById($id);
-        $class_name = $this->model_name;
+        $class_name = $this->model_name;        
 
         if ($item == null)
         {
-            $this->setApiException( new ItemNotFound() );
+            throw new ItemNotFound();
         }
         else
         {
             /* Get post data */
-            $update = $request->all();
+            $post = $request->all();
+            $data = isset($post["data"]) ? $post["data"] : [];
 
             /* Update item */
-            $update = $this->toDatabase($update);
-            foreach ($update as $key => $value) $item->$key = $value;
+            $data = $this->toDatabase($data);
+            foreach ($data as $key => $value) $item->$key = $value;
             $item->save();
             $result = $this->fromDatabase($item);
 
@@ -232,7 +258,7 @@ class ApiController extends BaseController
 
         if ($item == null)
         {
-            $this->setApiException( new ItemNotFound() );
+            throw new ItemNotFound();
         }
         else
         {

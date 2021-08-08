@@ -18,10 +18,10 @@ class TargetController extends ApiController
     static function registerRoutes(Router $router)
     {
         $router->get('targets/',  ['uses' => 'TargetController@actionGetAll']);
-        $router->get('targets/{id}', ['uses' => 'TargetController@actionGetOne']);
+        $router->get('targets/{id:\d+}/', ['uses' => 'TargetController@actionGetOne']);
         $router->post('targets/create/', ['uses' => 'TargetController@actionCreate']);
-        $router->post('targets/{id}/edit/', ['uses' => 'TargetController@actionUpdate']);
-        $router->delete('targets/{id}/delete/', ['uses' => 'TargetController@actionDelete']);
+        $router->post('targets/{id:\d+}/edit/', ['uses' => 'TargetController@actionUpdate']);
+        $router->delete('targets/{id:\d+}/delete/', ['uses' => 'TargetController@actionDelete']);
     }
 
     

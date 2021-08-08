@@ -18,10 +18,10 @@ class TaskController extends ApiController
     static function registerRoutes(Router $router)
     {
         $router->get('tasks/',  ['uses' => 'TaskController@actionGetAll']);
-        $router->get('tasks/{id}', ['uses' => 'TaskController@actionGetOne']);
+        $router->get('tasks/{id:\d+}/', ['uses' => 'TaskController@actionGetOne']);
         $router->post('tasks/create/', ['uses' => 'TaskController@actionCreate']);
-        $router->post('tasks/{id}/edit/', ['uses' => 'TaskController@actionUpdate']);
-        $router->delete('tasks/{id}/delete/', ['uses' => 'TaskController@actionDelete']);
+        $router->post('tasks/{id:\d+}/edit/', ['uses' => 'TaskController@actionUpdate']);
+        $router->delete('tasks/{id:\d+}/delete/', ['uses' => 'TaskController@actionDelete']);
     }
 
     

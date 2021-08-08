@@ -35,7 +35,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
-        parent::report($exception);
+        //parent::report($exception);
     }
 
     /**
@@ -49,6 +49,24 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        return parent::render($request, $exception);
+        $error_code = $exception->getCode();
+        if ($error_code > 0) $error_code = -$error_code;
+        else if ($error_code == 0) $error_code = -1;
+
+        $is_debug = env("APP_DEBUG");
+
+        $response = response()->json([
+            "data" => null,
+            "error" => [
+                "code" => $error_code,
+                "str" => $exception->getMessage(),
+                "name" => str_replace("\\", ".", get_class($exception)),
+                "file" => $is_debug ? $exception->getFile() : "",
+                "line" => $is_debug ? $exception->getLine() : 0,
+                "trace" => $is_debug ? $exception->getTrace() : [],
+            ]
+        ], 500);
+
+        return $response;
     }
 }
