@@ -8,6 +8,7 @@
 	{
         attr(obj: any, keys: Array<string> | string, default_value: any = null)
         {
+            if (obj == null) return default_value;
             if (keys instanceof String || typeof keys == "string")
             {
                 let s = String(keys);

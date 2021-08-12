@@ -109,7 +109,6 @@ export class TaskColumn extends BaseObject
 {
 	title: string = "";
 	date: string = "";
-	tasks: Array<number> = new Array<number>();
 
 	/**
 	 * From object
@@ -118,10 +117,6 @@ export class TaskColumn extends BaseObject
 	{
 		this.title = String(params["title"] || this.title);
 		this.date = String(params["date"] || this.date);
-		if (params["tasks"] != undefined && params["tasks"] instanceof Array)
-		{
-			this.tasks = params["tasks"].slice().map( item => Number(item) );
-		}
 		super.assignValues(params);
 		return this;
 	}
@@ -136,6 +131,8 @@ export class TaskListPageState extends BaseObject
 	tasks: Array<Task> = new Array<Task>();
 	targets: Array<Target> = new Array<Target>();
 	columns: Array<TaskColumn> = new Array<TaskColumn>();
+	task_drag_item: Task | null = null;
+	task_drag_prev_id: number = -1;
 
 
 	/**
@@ -143,10 +140,11 @@ export class TaskListPageState extends BaseObject
 	 */
 	getTaskById(task_id:number): Task | null
 	{
-		let task:Task | undefined = this.tasks.find( (task) => task.id === task_id );
+		let task:Task | undefined = this.tasks.find( (task) => task.id == task_id );
 		if (task == undefined) return null;
 		return task;
 	}
+
 
 	/**
 	 * Returns target by id
@@ -178,6 +176,74 @@ export class TaskListPageState extends BaseObject
 	
 
 	/**
+	 * Returns target name by task id
+	 */
+	getColumnTasks(column: TaskColumn): Array<Task>
+	{
+		let res = this.tasks
+			/* Get task by date */
+			.filter( task => task.date == column.date )
+			/* Sort by pos */
+			.sort( (a: Task, b: Task) => a.pos - b.pos )
+		;
+		return res;
+	}	
+
+
+	/**
+	 * Insert src before item
+	 */
+	dragTask(task_id_src: number, task_id_dest: number)
+	{
+		if (task_id_src == task_id_dest) return;
+
+		let src: Task | null = this.getTaskById(task_id_src);
+		let dest: Task | null = this.getTaskById(task_id_dest);
+		if (src == null || dest == null) return;
+
+		let column_date: string = dest.date;
+
+		/* Get tasks in column by date */
+		let arr: Array<Task> = this.tasks
+			.filter( task => task.date == column_date )
+			.sort( (a: Task, b: Task) => a.pos - b.pos )
+		;
+
+		let kind = "";
+		let index_src:number = arr.indexOf(src);
+		let index_dest:number = arr.indexOf(dest);
+
+		if (index_src == -1) kind = "before";
+		else if (index_src < index_dest) kind = "after";
+		else kind = "before";
+
+		/* Remove src */
+		if (index_src != -1) arr.splice(index_src, 1);
+
+		/* Insert new item */
+		if (kind == "before")
+		{
+			let index:number = arr.indexOf(dest);
+			arr.splice(index, 0, src);
+		}
+		else
+		{
+			let index:number = arr.indexOf(dest) + 1;
+			arr.splice(index, 0, src);
+		}
+
+		/* Set task posistion */
+		for (let i=0; i<arr.length; i++)
+		{
+			arr[i].pos = i;
+		}
+
+		/* Update src date */
+		src.date = dest.date;
+	}
+
+
+	/**
 	 * Init columns
 	 */
 	static initColumns(state:TaskListPageState)
@@ -199,13 +265,6 @@ export class TaskListPageState extends BaseObject
 					({
 						"title": value,
 						"date": value,
-						"tasks": state.tasks
-							/* Get task by date */
-							.filter( task => task.date == value )
-							/* Sort by pos */
-							.sort( (a: Task, b: Task) => a.pos - b.pos )
-							/* Get task id */
-							.map( task => task.id )
 					})
 				)
 			}

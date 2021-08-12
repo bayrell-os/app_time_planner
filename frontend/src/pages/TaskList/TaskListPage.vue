@@ -17,13 +17,14 @@
 	background-color: white;
 	border: 1px #ccc solid;
 	margin-bottom: 10px;
-	cursor: pointer;
+	/*cursor: pointer;*/
 	&--simple{
 		padding: 5px;
 	}
 	&_title{
 		background-color: rgb(204, 200, 200);
 		padding: 5px;
+		cursor: pointer;
 	}
 	&_desc{
 		padding: 5px;
@@ -35,7 +36,7 @@
 <template>
 	<div class="task_list">
 
-		<div class="task_list_wrap">
+		<div class="task_list_wrap task_list_wrap--target">
 			<div class="task_list_wrap_title">Цели</div>
 			<div class="task_list_items">
 				<div class="task_list_item task_list_item--simple"
@@ -48,23 +49,34 @@
 			</div>
 		</div>
 
-		<div class="task_list_wrap"
+		<div class="task_list_wrap task_list_wrap--column"
 			v-for="column, index in model.columns"
 			v-bind:key="index"
+			v-bind:data-column-id="column.id"
+			v-bind:data-column-date="column.date"
 
 		>
 			<div class="task_list_wrap_title">{{ column.title }}</div>
-			<div class="task_list_items">
+			<div class="task_list_items"
+				@drop="onDrop($event, column)"
+				@dragover.prevent
+         		@dragenter="onDragEnterColumn($event, column)"
+			>
 				<div class="task_list_item task_list_item--full"
-					v-for="task_id, index in column.tasks"
+					v-for="task, index in model.getColumnTasks(column)"
 					v-bind:key="index"
-					v-bind:data-task-id="task_id"
+					v-bind:data-task-id="task.id"
+					@dragenter="onDragEnterTask($event, task)"
+					@dragover="onDragOverTask($event, task)"
 				>
-					<div class="task_list_item_title">
-						{{ attr(model.getTargetByTaskID(task_id), "name", "") }}
+					<div class="task_list_item_title"
+						@dragstart="onDragStart($event, task)"
+						draggable="true"
+					>
+						{{ attr(model.getTargetById(task.target_id), "name", "") }}
 					</div>
 					<div class="task_list_item_desc">
-						{{ attr(model.getTaskById(task_id), "name", "") }}
+						{{ task.name }}
 					</div>
 				</div>
 			</div>
@@ -90,6 +102,49 @@ export default defineComponent({
 		{
 			console.log("!!!");
 		},
+		onDragStart(event, task)
+		{
+			this.model.task_drag_item = task;
+			this.model.task_drag_elem = event.target;
+			event.dataTransfer.dropEffect = 'move';
+			event.dataTransfer.effectAllowed = 'move';
+			this.model.task_drag_prev_id = -1;
+		},
+		onDrop(event, column)
+		{
+			this.model.task_drag_item = null;
+		},
+		onDragEnterColumn(event, column)
+		{
+			// this.model.task_drag_prev_id = -1;
+			/*event.dataTransfer.setData('enter_item', column)*/
+		},
+		onDragEnterTask(event, task)
+		{
+			if (this.model.task_drag_item)
+			{
+				if (
+					this.model.task_drag_item.id != task.id &&
+					this.model.task_drag_prev_id != task.id
+				)
+				{
+					this.model.dragTask(this.model.task_drag_item.id, task.id);
+					this.model.task_drag_prev_id = task.id;
+				}
+			}
+		},
+		onDragOverTask(event, task)
+		{
+			if (this.model.task_drag_prev_id == task.id)
+			{
+				// console.log(task.id);
+			}
+			else
+			{
+				this.model.task_drag_prev_id = -1;
+			}
+			event.preventDefault();
+		}
 	}
 });
 
