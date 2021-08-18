@@ -1,0 +1,10 @@
+# Api task crud test
+
+
+###
+
+
+# Search tasks
+
+GET {{app_url}}/user.tasks/crud/search/?filter[]=["status","=",0] HTTP/1.1
+

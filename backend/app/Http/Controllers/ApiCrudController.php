@@ -4,18 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use App\Models\Task;
 use App\Exceptions\ItemNotFound;
+use App\Utils;
 
 
 /**
- * Api controller
+ * Api crud controller
  */
-abstract class ApiController extends BaseController
+abstract class ApiCrudController extends BaseController
 {
+    var $request = null;
     var $action = "";
     var $model_name = "";
-    var $api_result = [
+    var $api_result =
+    [
         "data" => null,
         "error" => [
             "code" => 0,
@@ -23,8 +25,24 @@ abstract class ApiController extends BaseController
             "name" => "",
         ]
     ];
-
-
+    var $filter = null;
+    var $start = 0;
+    var $limit = 1000;
+    var $total = 0;
+    var $items = null;
+    
+    
+    
+    /**
+     * Returns max limit
+     */
+    public function getMaxLimit()
+    {
+        return 1000;
+    }
+    
+    
+    
     /**
      * Set api success
      */
@@ -35,8 +53,9 @@ abstract class ApiController extends BaseController
         $this->api_result["error"]["str"] = "";
         $this->api_result["error"]["name"] = "";
     }
-
-
+    
+    
+    
     /**
      * Set api error
      */
@@ -46,8 +65,9 @@ abstract class ApiController extends BaseController
         $this->api_result["error"]["str"] = $str;
         $this->api_result["error"]["name"] = "";
     }
-
-
+    
+    
+    
     /**
      * Set api exception
      */
@@ -57,8 +77,9 @@ abstract class ApiController extends BaseController
         $this->api_result["error"]["str"] = $e->getMessage();
         $this->api_result["error"]["name"] = str_replace("\\", ".", get_class($e));
     }
-
-
+    
+    
+    
     /**
      * Get api response
      */
@@ -66,8 +87,9 @@ abstract class ApiController extends BaseController
     {
         return response()->json($this->api_result);
     }
-
-
+    
+    
+    
     /**
      * Validate reuest
      */
@@ -75,8 +97,9 @@ abstract class ApiController extends BaseController
     {
         return true;
     }
-
-
+    
+    
+    
     /**
      * From database
      */
@@ -84,8 +107,9 @@ abstract class ApiController extends BaseController
     {
         return $item->getAttributes();
     }
-
-
+    
+    
+    
     /**
      * To database
      */
@@ -93,19 +117,56 @@ abstract class ApiController extends BaseController
     {
         return $item;
     }
-
-
+    
+    
+    
+    /**
+     * Allow filter fields
+     */
+    public function allowFilterField($field_name, $op, $value)
+    {
+        return false;
+    }
+    
+    
+    
+    /**
+     * Find query
+     */
+    public function findQuery($query)
+    {
+        return $query;
+    }
+    
+    
+    
     /**
      * Find items
      */
     public function findItems()
     {
         $class_name = $this->model_name;
-        $items = $class_name::all();
-        return $items;
+        
+        /* Get query */
+        $query = $class_name::query();
+        
+        /* Limit */
+        $query
+            ->where($this->filter)
+            ->offset($this->start)
+            ->limit($this->limit)
+        ;
+        
+        /* Filter query */
+        $query = $this->findQuery($query);
+        
+        /* Result */
+        $this->items = $query->get();
+        $this->total = $query->count();        
     }
-
-
+    
+    
+    
     /**
      * Find item by id
      */
@@ -115,40 +176,111 @@ abstract class ApiController extends BaseController
         $item = $class_name::find($id);
         return $item;
     }
-
-
+    
+    
+    
+    /**
+     * Returns filter by request
+     */
+    public function initFilter()
+    {
+        $this->filter = [];
+        if ($this->request->exists("filter"))
+        {
+            $this->filter = Utils::parseFilter
+            (
+                $this->request->input("filter"),
+                Utils::method($this, "allowFilterField")
+            );
+        }
+    }
+    
+    
+    
+    /**
+     * Init action
+     */
+    public function init()
+    {
+        /* Search action */
+        if ($this->action == "actionSearch")
+        {
+            $max_limit = $this->getMaxLimit();
+            if ($this->request->exists("start"))
+            {
+                $this->start = (int)($this->request->input("start"));
+            }
+            if ($this->request->exists("start"))
+            {
+                $this->limit = (int)($this->request->input("limit"));
+            }
+            if ($this->limit > $max_limit) $this->limit = $max_limit;
+            $this->initFilter();
+        }
+    }
+    
+    
+    
+    /**
+     * Final action
+     */
+    public function final()
+    {
+    }
+    
+    
+    
     /**
      * Get all data
      */
-    public function actionGetAll()
+    public function actionSearch(Request $request)
     {
-        $this->action = "actionGetAll";
-
+        $this->action = "actionSearch";
+        $this->request = $request;
+        
+        /* Setup action */
+        $this->init();
+        
         /* Find items */
-        $items = $this->findItems();
+        $this->findItems();
+        
+        /* Result */
+        $result =
+        [
+            "items" => [],
+            "filter" => $this->filter,
+            "start" => $this->start,
+            "limit" => $this->limit,
+            "total" => $this->total,
+        ];
         
         /* From database */
-        $result = [];
+        $items = $this->items;
         foreach ($items->all() as $item)
         {
             $item = $this->fromDatabase($item);
-            $result[] = $item;
+            $result["items"][] = $item;
         }
 
         /* Set api result */
         $this->setApiSuccess($result);
 
+        /* Setup action */
+        $this->final();
+        
         /* Response */
         return $this->getApiResponse();
     }
-
-
+    
+    
+    
     /**
      * Get item by id
      */
-    public function actionGetOne($id)
+    public function actionItem($id, Request $request)
     {
-        $this->action = "actionGetOne";
+        $this->action = "actionItem";
+        $this->request = $request;
 
         /* Find items */
         $item = $this->findItemById($id);
@@ -168,14 +300,17 @@ abstract class ApiController extends BaseController
         
         return $this->getApiResponse();
     }
-
-
+    
+    
+    
     /**
      * Create item
      */
     public function actionCreate(Request $request)
     {
         $this->action = "actionCreate";
+        $this->request = $request;
+        
         $class_name = $this->model_name;
 
         /* Validate */
@@ -201,15 +336,17 @@ abstract class ApiController extends BaseController
         /* Response */
         return $this->getApiResponse();
     }
-
-
+    
+    
+    
     /**
      * Update item
      */
     public function actionUpdate($id, Request $request)
     {
         $this->action = "actionUpdate";
-
+        $this->request = $request;
+        
         /* Validate */
         if (!$this->validateRequest($request))
         {
@@ -243,15 +380,17 @@ abstract class ApiController extends BaseController
         /* Response */
         return $this->getApiResponse();
     }
-
-
+    
+    
+    
     /**
      * Delete item
      */
-    public function actionDelete($id)
+    public function actionDelete($id, Request $request)
     {
         $this->action = "actionDelete";
-
+        $this->request = $request;
+        
         /* Find items */
         $item = $this->findItemById($id);
         $class_name = $this->model_name;

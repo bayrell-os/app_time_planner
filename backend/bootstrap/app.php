@@ -126,8 +126,8 @@ $app->router->group([ 'namespace' => 'App\Http\Controllers' ], function ($router
         return "Hello";
     });
 
-    \App\Http\Controllers\TaskController::registerRoutes($router);
-    \App\Http\Controllers\TargetController::registerRoutes($router);
+    \App\Http\Controllers\TaskCrudController::registerRoutes($router);
+    \App\Http\Controllers\TargetCrudController::registerRoutes($router);
 
 });
 

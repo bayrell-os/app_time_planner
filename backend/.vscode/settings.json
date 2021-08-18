@@ -1,5 +1,12 @@
 {
     "editor.insertSpaces": true,
     "editor.detectIndentation": true,
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "editor.trimAutoWhitespace": false,
+    "rest-client.environmentVariables":
+    {
+        "planner.docker0": {
+            "app_url": "http://planner.docker0/api",
+        },
+    }
 }

@@ -7,7 +7,7 @@ use Laravel\Lumen\Routing\Router;
 use App\Models\Target;
 
 
-class TargetController extends ApiController
+class TargetCrudController extends ApiCrudController
 {
     var $model_name = Target::class;
    
