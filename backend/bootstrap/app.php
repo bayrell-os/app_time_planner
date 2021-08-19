@@ -10,7 +10,7 @@ $env = Env::getRepository();
 $env->set("APP_NAME", "Time Planner");
 $env->set("APP_ENV", "docker");
 $env->set("APP_DEBUG", "true");
-$env->set("APP_URL", "http://planner.docker0");
+$env->set("APP_URL", getenv("APP_URL"));
 $env->set("LOG_CHANNEL", "stack");
 $env->set("LOG_SLACK_WEBHOOK_URL", "");
 $env->set("DB_CONNECTION", "mysql");
@@ -19,6 +19,7 @@ $env->set("DB_PORT", getenv("DB_PORT"));
 $env->set("DB_DATABASE", getenv("DB_DATABASE"));
 $env->set("DB_USERNAME", getenv("DB_USERNAME"));
 $env->set("DB_PASSWORD", getenv("DB_PASSWORD"));
+$env->set("DB_STRICT_MODE", false);
 $env->set("CACHE_DRIVER", "file");
 $env->set("QUEUE_CONNECTION", "sync");
 

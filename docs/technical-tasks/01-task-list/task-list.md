@@ -84,3 +84,4 @@
 1. Поле work_hours должно рассчитываться автоматически на основе значений gmdate_work_begin и gmdate_work_end.
 2. gmdate_plan_end должно быть больше чем gmdate_plan_begin
 3. gmdate_work_end должно быть больше чем gmdate_work_begin
+4. gmdate_plan может быть равным null. Тогда нужно учитывать поле gmdate_work

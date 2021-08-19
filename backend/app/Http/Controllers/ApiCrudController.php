@@ -30,6 +30,7 @@ abstract class ApiCrudController extends BaseController
     var $limit = 1000;
     var $total = 0;
     var $items = null;
+    var $item = null;
     
     
     
@@ -93,9 +94,8 @@ abstract class ApiCrudController extends BaseController
     /**
      * Validate reuest
      */
-    public function validateRequest(Request $request)
+    public function validateRequest()
     {
-        return true;
     }
     
     
@@ -173,8 +173,41 @@ abstract class ApiCrudController extends BaseController
     public function findItemById($id)
     {
         $class_name = $this->model_name;
-        $item = $class_name::find($id);
-        return $item;
+        
+        /* Get query */
+        $query = $class_name::query()->where("id", "=", $id);
+        
+        /* Filter query */
+        $query = $this->findQuery($query);
+        
+        return $query->first();
+    }
+    
+    
+    
+    /**
+     * Create item
+     */
+    public function createItem($data)
+    {
+        $class_name = $this->model_name;
+        $this->item = new $class_name();
+        foreach ($data as $key => $value) $this->item->$key = $value;
+        $this->item->save();
+        $this->item->refresh();
+    }
+    
+    
+    
+    /**
+     * Update item
+     */
+    public function updateItem($data)
+    {
+        $class_name = $this->model_name;
+        foreach ($data as $key => $value) $this->item->$key = $value;
+        $this->item->save();
+        $this->item->refresh();
     }
     
     
@@ -238,8 +271,11 @@ abstract class ApiCrudController extends BaseController
         $this->action = "actionSearch";
         $this->request = $request;
         
-        /* Setup action */
+        /* Init action */
         $this->init();
+        
+        /* Validate request */
+        $this->validateRequest();
         
         /* Find items */
         $this->findItems();
@@ -265,7 +301,7 @@ abstract class ApiCrudController extends BaseController
         /* Set api result */
         $this->setApiSuccess($result);
 
-        /* Setup action */
+        /* Final action */
         $this->final();
         
         /* Response */
@@ -281,22 +317,34 @@ abstract class ApiCrudController extends BaseController
     {
         $this->action = "actionItem";
         $this->request = $request;
-
-        /* Find items */
-        $item = $this->findItemById($id);
-
-        if ($item == null)
+        
+        /* Init action */
+        $this->init();
+        
+        /* Validate request */
+        $this->validateRequest();
+        
+        /* Find item */
+        $this->item = $this->findItemById($id);
+        
+        if ($this->item == null)
         {
             throw new ItemNotFound();
         }
         else
         {
             /* From database */
-            $result = $this->fromDatabase($item);
-
+            $result =
+            [
+                "item" => $this->fromDatabase($this->item)
+            ];
+            
             /* Set result */
             $this->setApiSuccess($result);
         }
+        
+        /* Final action */
+        $this->final();
         
         return $this->getApiResponse();
     }
@@ -310,25 +358,33 @@ abstract class ApiCrudController extends BaseController
     {
         $this->action = "actionCreate";
         $this->request = $request;
-        
         $class_name = $this->model_name;
-
-        /* Validate */
-        if (!$this->validateRequest($request))
-        {
-            return $this->getApiResponse();    
-        }
-
+        
+        /* Init action */
+        $this->init();
+        
+        /* Validate request */
+        $this->validateRequest();
+        
         /* Get post data */
         $post = $request->all();
-        $data = isset($post["data"]) ? $post["data"] : [];
-
-        /* Create item */
+        $data = Utils::attr($post, ["data", "item"], null);
+        if ($data == null)
+        {
+            throw new \Exception("Field data.item is empty");
+        }
+        
+        /* Convert to database*/
         $data = $this->toDatabase($data);
-        $item = new $class_name();
-        foreach ($data as $key => $value) $item->$key = $value;
-        $item->save();
-        $result = $this->fromDatabase($item);
+        
+        /* Create item */
+        $this->createItem($data);
+        
+        /* From database */
+        $result =
+        [
+            "item" => $this->fromDatabase($this->item)
+        ];
         
         /* Set result */
         $this->setApiSuccess($result);
@@ -347,17 +403,16 @@ abstract class ApiCrudController extends BaseController
         $this->action = "actionUpdate";
         $this->request = $request;
         
-        /* Validate */
-        if (!$this->validateRequest($request))
-        {
-            return $this->getApiResponse();    
-        }
+        /* Init action */
+        $this->init();
+        
+        /* Validate request */
+        $this->validateRequest();
 
-        /* Find items */
-        $item = $this->findItemById($id);
-        $class_name = $this->model_name;        
-
-        if ($item == null)
+        /* Find item */
+        $this->item = $this->findItemById($id);
+        
+        if ($this->item == null)
         {
             throw new ItemNotFound();
         }
@@ -365,18 +420,28 @@ abstract class ApiCrudController extends BaseController
         {
             /* Get post data */
             $post = $request->all();
-            $data = isset($post["data"]) ? $post["data"] : [];
-
-            /* Update item */
+            $data = Utils::attr($post, ["data", "item"], null);
+            if ($data == null)
+            {
+                throw new \Exception("Field data.item is empty");
+            }
+            
+            /* To database */
             $data = $this->toDatabase($data);
-            foreach ($data as $key => $value) $item->$key = $value;
-            $item->save();
-            $result = $this->fromDatabase($item);
-
+            
+            /* Update item */
+            $this->updateItem($data);
+            
+            /* From database */
+            $result =
+            [
+                "item" => $this->fromDatabase($this->item)
+            ];
+            
             /* Set result */
             $this->setApiSuccess($result);
         }
-
+        
         /* Response */
         return $this->getApiResponse();
     }

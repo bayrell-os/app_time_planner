@@ -3,8 +3,62 @@
 
 ###
 
+# Поиск задач
 
-# Search tasks
+GET {{api_url}}/user.tasks/crud/search/?filter[]=["status","=",1] HTTP/1.1
 
-GET {{app_url}}/user.tasks/crud/search/?filter[]=["status","=",0] HTTP/1.1
 
+###
+
+# Получение задачи
+
+GET {{api_url}}/user.tasks/crud/item/2/ HTTP/1.1
+
+
+###
+
+# Создание задачи
+
+POST {{api_url}}/user.tasks/crud/create/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "data":
+  {
+    "item":
+    {
+      "name": "New task",
+      "target_id": 10,
+      "gmdate_plan_begin": "2021-08-16 12:00:00",
+      "status": "0"
+    }
+  }
+}
+
+
+###
+
+# Редактирование задачи
+
+POST {{api_url}}/user.tasks/crud/edit/9/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "data":
+  {
+    "item":
+    {
+      "name": "New task 2",
+      "description": "Description",
+      "status": 1
+    }
+  }
+}
+
+
+###
+
+# Удаление задачи
+
+DELETE {{api_url}}/user.tasks/crud/delete/10/ HTTP/1.1
+Content-Type: application/json

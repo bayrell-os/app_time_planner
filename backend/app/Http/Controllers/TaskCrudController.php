@@ -100,7 +100,6 @@ class TaskCrudController extends ApiCrudController
                 "gmdate_plan_end",
                 "gmdate_work_begin",
                 "gmdate_work_end",
-                "work_hours",
                 "status",
                 "pos",
             ]
